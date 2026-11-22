@@ -55,33 +55,32 @@
       border-radius: 16px;
       overflow: hidden;
       box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
-      background-color: #111;
-      transform: translateZ(0);
+      background-color: #000;
     }
 
     video {
       display: block;
       width: 100%;
       height: auto;
-      will-change: transform;
     }
 
     .sound-btn {
       position: absolute;
       bottom: 14px;
       right: 14px;
-      background: rgba(20, 20, 20, 0.78);
+      background: rgba(20, 20, 20, 0.75);
       color: #fff;
       border: 1px solid rgba(255, 255, 255, 0.25);
       padding: 8px 14px;
       border-radius: 20px;
       font-size: 0.85rem;
       cursor: pointer;
+      backdrop-filter: blur(4px);
       transition: background 0.2s ease, opacity 0.3s ease;
     }
 
     .sound-btn:hover {
-      background: rgba(20, 20, 20, 0.95);
+      background: rgba(20, 20, 20, 0.92);
     }
 
     .sound-btn.hidden {
@@ -147,11 +146,11 @@
     </h1>
 
     <div class="video-wrapper">
-      <video id="introVideo" autoplay muted playsinline preload="auto">
+      <video id="introVideo" playsinline preload="auto">
         <source src="1122.mp4" type="video/mp4">
         Ваш браузер не поддерживает воспроизведение видео.
       </video>
-      <button id="soundBtn" class="sound-btn" type="button">🔊 Включить звук</button>
+      <button id="soundBtn" class="sound-btn hidden" type="button">🔊 Включить звук</button>
     </div>
 
     <div class="reveal-block">
@@ -187,6 +186,19 @@
 
     video.addEventListener('error', showContent);
 
+    window.addEventListener('DOMContentLoaded', () => {
+      video.muted = false;
+      const playPromise = video.play();
+
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          video.muted = true;
+          video.play().catch(showContent);
+          soundBtn.classList.remove('hidden');
+        });
+      }
+    });
+
     soundBtn.addEventListener('click', () => {
       video.muted = false;
       video.currentTime = 0;
@@ -197,6 +209,7 @@
 
 </body>
 </html>
+
 
 
 
