@@ -92,6 +92,7 @@
       flex-direction: column;
       align-items: center;
       gap: 20px;
+      min-height: 120px;
     }
 
     .bottom-text {
@@ -100,12 +101,14 @@
       color: var(--text-muted);
       max-width: 580px;
       opacity: 0;
-      transform: translateY(12px);
-      transition: opacity 0.9s ease, transform 0.9s ease;
+      visibility: hidden;
+      transform: translateY(10px);
+      transition: opacity 0.9s ease, transform 0.9s ease, visibility 0.9s ease;
     }
 
-    .bottom-text.visible {
+    .bottom-text.show {
       opacity: 1;
+      visibility: visible;
       transform: translateY(0);
     }
 
@@ -120,15 +123,15 @@
       border-radius: 30px;
       box-shadow: 0 6px 18px rgba(59, 110, 140, 0.25);
       opacity: 0;
-      transform: translateY(12px);
-      pointer-events: none;
-      transition: opacity 0.9s ease, transform 0.9s ease, background-color 0.25s ease;
+      visibility: hidden;
+      transform: translateY(10px);
+      transition: opacity 0.9s ease, transform 0.9s ease, visibility 0.9s ease, background-color 0.25s ease;
     }
 
-    .cta-button.visible {
+    .cta-button.show {
       opacity: 1;
+      visibility: visible;
       transform: translateY(0);
-      pointer-events: auto;
     }
 
     .cta-button:hover {
@@ -162,29 +165,31 @@
     const soundBtn = document.getElementById('soundBtn');
     const bottomText = document.getElementById('bottomText');
     const ctaButton = document.getElementById('ctaButton');
-    let contentShown = false;
+    let stepStarted = false;
 
     video.playbackRate = 1.0;
 
-    function showContent() {
-      if (contentShown) return;
-      contentShown = true;
+    function startSequence() {
+      if (stepStarted) return;
+      stepStarted = true;
 
-      bottomText.classList.add('visible');
+      // Шаг 1: сразу после видео плавно появляется текст
+      bottomText.classList.add('show');
 
-      setTimeout(() => {
-        ctaButton.classList.add('visible');
-      }, 3000);
+      // Шаг 2: через 2.5 секунды плавно появляется кнопка
+      window.setTimeout(function() {
+        ctaButton.classList.add('show');
+      }, 2500);
     }
 
-    video.addEventListener('ended', () => {
+    video.addEventListener('ended', function() {
       soundBtn.classList.add('hidden');
-      showContent();
+      startSequence();
     });
 
-    video.addEventListener('error', showContent);
+    video.addEventListener('error', startSequence);
 
-    soundBtn.addEventListener('click', () => {
+    soundBtn.addEventListener('click', function() {
       video.muted = false;
       video.playbackRate = 1.0;
       video.currentTime = 0;
@@ -195,6 +200,7 @@
 
 </body>
 </html>
+
 
 
 
