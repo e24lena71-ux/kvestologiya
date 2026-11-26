@@ -33,8 +33,8 @@
     }
 
     .top-nav {
-      width: 350px;
-      max-width: 100%;
+      width: 100%;
+      max-width: 350px;
       display: flex;
       justify-content: flex-start;
       margin-bottom: 12px;
@@ -52,11 +52,11 @@
     }
 
     .chat-card {
-      width: 350px;
-      max-width: 100%;
-      height: 84vh;
-      max-height: 740px;
-      min-height: 540px;
+      width: 100%;
+      max-width: 350px;
+      height: 82vh;
+      max-height: 760px;
+      min-height: 520px;
       background: var(--card-bg);
       border-radius: 20px;
       box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
@@ -64,36 +64,34 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      position: relative;
     }
 
-    /* Увеличенная белая шапка с аватаром робота */
+    /* Шапка с аватаром робота */
     .robot-header {
       display: flex;
       align-items: center;
-      gap: 16px;
-      padding: 22px 20px;
+      gap: 14px;
+      padding: 14px 20px;
       background: #ffffff;
       border-bottom: 1px solid var(--border-color);
-      position: relative;
-      z-index: 999999;
-      flex-shrink: 0;
+      z-index: 2;
     }
 
     .avatar-ring {
       position: relative;
-      width: 76px;
-      height: 76px;
+      width: 54px;
+      height: 54px;
       border-radius: 50%;
-      padding: 3px;
+      padding: 2px;
       background: #e2e8f0;
       flex-shrink: 0;
       transition: box-shadow 0.3s ease, background 0.3s ease;
     }
 
+    /* Эффект свечения и пульсации, когда бот отвечает */
     .avatar-ring.speaking {
       background: linear-gradient(135deg, #3b6e8c, #68b0ab);
-      box-shadow: 0 0 0 5px rgba(59, 110, 140, 0.2);
+      box-shadow: 0 0 0 4px rgba(59, 110, 140, 0.18);
       animation: pulseRing 1.2s infinite ease-in-out;
     }
 
@@ -118,40 +116,39 @@
     }
 
     .robot-name {
-      font-size: 1.18rem;
+      font-size: 1.05rem;
       font-weight: 600;
       color: var(--text-main);
     }
 
     .robot-status {
-      font-size: 0.86rem;
+      font-size: 0.82rem;
       color: var(--text-muted);
       display: flex;
       align-items: center;
       gap: 6px;
-      margin-top: 4px;
+      margin-top: 2px;
     }
 
     .status-dot {
-      width: 8px;
-      height: 8px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
       background-color: #4caf50;
       display: inline-block;
     }
 
-    /* Контейнер чата, подтянутый под шапку */
+    /* Контейнер, куда встраивается чат Aimylogic */
     #kvest-chat-box {
       flex: 1;
       width: 100%;
       height: 100%;
       position: relative;
-      z-index: 1;
       overflow: hidden;
       background: #ffffff;
-      margin-top: -54px;
     }
 
+    /* Растягиваем внутренний виджет на всю площадь карточки */
     #kvest-chat-box > div,
     #kvest-chat-box iframe {
       width: 100% !important;
@@ -201,6 +198,9 @@
               id: 'kvest-chat-box',
               enabled: true
             };
+            val.options.headline = val.options.headline || {};
+            val.options.headline.show = false;
+            val.options.showCloseButton = false;
           }
           savedAttrs = val;
         }
@@ -253,6 +253,7 @@
 
 </body>
 </html>
+
 
 
 
