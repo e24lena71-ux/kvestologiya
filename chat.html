@@ -34,7 +34,7 @@
 
     .top-nav {
       width: 100%;
-      max-width: 540px;
+      max-width: 520px;
       display: flex;
       justify-content: flex-start;
       margin-bottom: 12px;
@@ -53,7 +53,7 @@
 
     .chat-card {
       width: 100%;
-      max-width: 540px;
+      max-width: 520px;
       height: 82vh;
       max-height: 760px;
       min-height: 520px;
@@ -88,7 +88,6 @@
       transition: box-shadow 0.3s ease, background 0.3s ease;
     }
 
-    /* Эффект свечения и пульсации, когда бот отвечает */
     .avatar-ring.speaking {
       background: linear-gradient(135deg, #3b6e8c, #68b0ab);
       box-shadow: 0 0 0 4px rgba(59, 110, 140, 0.18);
@@ -148,17 +147,36 @@
       background: #ffffff;
     }
 
-    /* Растягиваем внутренний виджет на всю площадь карточки и убираем плавающую кнопку */
+    /* Принудительно растягиваем ВСЕ вложенные слои виджета на 100% ширины */
+    #kvest-chat-box * {
+      max-width: 100% !important;
+    }
+
     #kvest-chat-box > div,
+    #kvest-chat-box > div > div,
+    #kvest-chat-box [class*="chat"],
+    #kvest-chat-box [class*="container"],
+    #kvest-chat-box [class*="wrapper"],
     #kvest-chat-box iframe {
       width: 100% !important;
+      min-width: 100% !important;
       height: 100% !important;
       max-height: 100% !important;
       position: relative !important;
+      top: auto !important;
+      left: auto !important;
       bottom: auto !important;
       right: auto !important;
       box-shadow: none !important;
       border-radius: 0 !important;
+    }
+
+    /* Скрываем стандартную синюю шапку с крестиком внутри виджета */
+    #kvest-chat-box [class*="header"],
+    #kvest-chat-box [class*="Header"],
+    #kvest-chat-box [class*="headline"],
+    #kvest-chat-box [class*="Headline"] {
+      display: none !important;
     }
   </style>
 </head>
@@ -186,9 +204,7 @@
   </main>
 
   <script>
-    // 1. Включаем встраивание виджета внутрь #kvest-chat-box до его загрузки
     (function() {
-      var origDefine = Object.defineProperty;
       var savedAttrs = null;
 
       Object.defineProperty(window, 'JustWidgetAttributes', {
@@ -209,14 +225,12 @@
       });
     })();
 
-    // 2. Анимация аватара при появлении новых сообщений
     const avatarRing = document.getElementById('avatarRing');
     const robotAvatar = document.getElementById('robotAvatar');
     const statusText = document.getElementById('statusText');
     const chatBox = document.getElementById('kvest-chat-box');
     let speakTimer = null;
 
-    // Ставим видео-аватар на финальный кадр (где робот смотрит на пользователя)
     robotAvatar.addEventListener('loadedmetadata', function() {
       robotAvatar.currentTime = Math.max(0, robotAvatar.duration - 0.1);
     });
@@ -225,7 +239,6 @@
       avatarRing.classList.add('speaking');
       statusText.textContent = 'Говорит...';
 
-      // Плавно проигрываем короткий фрагмент движения робота
       try {
         robotAvatar.currentTime = 1.2;
         robotAvatar.play().catch(function() {});
@@ -239,7 +252,6 @@
       }, 2800);
     }
 
-    // Следим за появлением новых элементов в окне чата
     const observer = new MutationObserver(function(mutations) {
       let hasNewNodes = false;
       mutations.forEach(function(m) {
@@ -255,9 +267,9 @@
     observer.observe(chatBox, { childList: true, subtree: true });
   </script>
 
-  <!-- Подключение вашего виджета Aimylogic -->
-  <script src="https://bot.jaicp.com/chatwidget/EzGQTMKa:e0ad90bb3a75aee04ef2352161a74420e95edbb9/justwidget.js" async></script>
+  <script src="https://jaicp.com" async></script>
 
 </body>
 </html>
+
 
