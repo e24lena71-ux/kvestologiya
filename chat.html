@@ -145,19 +145,6 @@
       overflow: hidden;
       background: #ffffff;
     }
-
-    /* Растягиваем только сам iframe виджета на всю ширину 560px */
-    #kvest-chat-box iframe {
-      width: 100% !important;
-      max-width: 100% !important;
-      height: 100% !important;
-      max-height: 100% !important;
-      position: relative !important;
-      bottom: auto !important;
-      right: auto !important;
-      left: auto !important;
-      border: none !important;
-    }
   </style>
 </head>
 <body>
@@ -207,7 +194,6 @@
     const statusText = document.getElementById('statusText');
     const chatBox = document.getElementById('kvest-chat-box');
     let speakTimer = null;
-    let widgetBooted = false;
 
     robotAvatar.addEventListener('loadedmetadata', function() {
       robotAvatar.currentTime = Math.max(0, robotAvatar.duration - 0.1);
@@ -230,24 +216,7 @@
       }, 2800);
     }
 
-    // Ждём появления внутреннего iframe виджета и подаём ему официальные команды открытия и старта
     const observer = new MutationObserver(function() {
-      const iframe = chatBox.querySelector('iframe');
-      if (iframe && !widgetBooted) {
-        widgetBooted = true;
-        iframe.addEventListener('load', function() {
-          setTimeout(function() {
-            iframe.contentWindow.postMessage(JSON.stringify({ type: 'justWidget.open' }), '*');
-            setTimeout(function() {
-              iframe.contentWindow.postMessage(JSON.stringify({
-                type: 'justWidget.sendText',
-                data: { text: 'start', hiddenMessage: true }
-              }), '*');
-              triggerRobotSpeak();
-            }, 600);
-          }, 400);
-        });
-      }
       triggerRobotSpeak();
     });
 
