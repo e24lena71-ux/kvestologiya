@@ -198,10 +198,6 @@
               id: 'kvest-chat-box',
               enabled: true
             };
-            val.options.headline = val.options.headline || {};
-            val.options.headline.show = false;
-            val.options.showCloseButton = false;
-            val.options.startMessage = 'start';
           }
           savedAttrs = val;
         }
@@ -248,6 +244,22 @@
     });
 
     observer.observe(chatBox, { childList: true, subtree: true });
+
+    // Официальное открытие встроенного виджета и запуск сценария по слову 'start'
+    let started = false;
+    const initChecker = setInterval(function() {
+      if (window.justwidget && typeof window.justwidget.open === 'function' && !started) {
+        started = true;
+        clearInterval(initChecker);
+        window.justwidget.open();
+        setTimeout(function() {
+          if (typeof window.justwidget.sendMessage === 'function') {
+            window.justwidget.sendMessage('start');
+          }
+        }, 600);
+      }
+    }, 300);
+    setTimeout(function() { clearInterval(initChecker); }, 8000);
   </script>
 
   <script src="https://jaicp.com" async></script>
