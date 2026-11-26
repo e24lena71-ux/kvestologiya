@@ -34,7 +34,7 @@
 
     .top-nav {
       width: 100%;
-      max-width: 520px;
+      max-width: 360px;
       display: flex;
       justify-content: flex-start;
       margin-bottom: 12px;
@@ -53,9 +53,9 @@
 
     .chat-card {
       width: 100%;
-      max-width: 520px;
+      max-width: 360px;
       height: 82vh;
-      max-height: 760px;
+      max-height: 720px;
       min-height: 520px;
       background: var(--card-bg);
       border-radius: 20px;
@@ -64,6 +64,7 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      position: relative;
     }
 
     /* Шапка с аватаром робота */
@@ -71,17 +72,18 @@
       display: flex;
       align-items: center;
       gap: 14px;
-      padding: 14px 20px;
+      padding: 14px 18px;
       background: #ffffff;
       border-bottom: 1px solid var(--border-color);
-      z-index: 2;
+      position: relative;
+      z-index: 10;
       flex-shrink: 0;
     }
 
     .avatar-ring {
       position: relative;
-      width: 54px;
-      height: 54px;
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
       padding: 2px;
       background: #e2e8f0;
@@ -116,13 +118,13 @@
     }
 
     .robot-name {
-      font-size: 1.05rem;
+      font-size: 1.02rem;
       font-weight: 600;
       color: var(--text-main);
     }
 
     .robot-status {
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       color: var(--text-muted);
       display: flex;
       align-items: center;
@@ -146,25 +148,19 @@
       position: relative;
       overflow: hidden;
       background: #ffffff;
+      margin-top: -54px;
     }
 
-    /* Точечно растягиваем только корневую обёртку виджета и iframe */
     #kvest-chat-box > div,
     #kvest-chat-box iframe {
       width: 100% !important;
       height: 100% !important;
-      max-width: 100% !important;
       max-height: 100% !important;
       position: relative !important;
       bottom: auto !important;
       right: auto !important;
       box-shadow: none !important;
       border-radius: 0 !important;
-    }
-
-    /* Сдвигаем внутреннюю синюю полоску наверх за край блока */
-    #kvest-chat-box {
-      margin-top: -48px;
     }
   </style>
 </head>
@@ -204,6 +200,9 @@
               id: 'kvest-chat-box',
               enabled: true
             };
+            val.options.headline = val.options.headline || {};
+            val.options.headline.show = false;
+            val.options.showCloseButton = false;
           }
           savedAttrs = val;
         }
@@ -252,10 +251,11 @@
     observer.observe(chatBox, { childList: true, subtree: true });
   </script>
 
-  <script src="https://jaicp.com" async></script>
+  <script src="https://bot.jaicp.com/chatwidget/EzGQTMKa:e0ad90bb3a75aee04ef2352161a74420e95edbb9/justwidget.js" async></script>
 
 </body>
 </html>
+
 
 
 
