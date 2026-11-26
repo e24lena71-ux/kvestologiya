@@ -69,11 +69,12 @@
     .robot-header {
       display: flex;
       align-items: center;
-      gap: 14px;
-      padding: 18px 20px;
+      gap: 16px;
+      padding: 18px 22px;
       background: #ffffff;
       border-bottom: 1px solid var(--border-color);
       z-index: 2;
+      flex-shrink: 0;
     }
 
     .avatar-ring {
@@ -145,7 +146,7 @@
       background: #ffffff;
     }
 
-    /* Растягиваем только открытое окно чата на всю ширину 560px */
+    .justwidget,
     #kvest-chat-box > div,
     #kvest-chat-box iframe {
       width: 100% !important;
@@ -200,6 +201,7 @@
             val.options.headline = val.options.headline || {};
             val.options.headline.show = false;
             val.options.showCloseButton = false;
+            val.options.startMessage = 'start';
           }
           savedAttrs = val;
         }
