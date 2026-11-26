@@ -55,7 +55,7 @@
       width: 100%;
       max-width: 350px;
       height: 82vh;
-      max-height: 700px;
+      max-height: 760px;
       min-height: 520px;
       background: var(--card-bg);
       border-radius: 20px;
@@ -64,26 +64,23 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      position: relative;
     }
 
-    /* Шапка с аватаром робота — всегда поверх виджета */
+    /* Шапка с аватаром робота */
     .robot-header {
       display: flex;
       align-items: center;
       gap: 14px;
-      padding: 14px 18px;
+      padding: 14px 20px;
       background: #ffffff;
       border-bottom: 1px solid var(--border-color);
-      position: relative;
-      z-index: 999999;
-      flex-shrink: 0;
+      z-index: 2;
     }
 
     .avatar-ring {
       position: relative;
-      width: 50px;
-      height: 50px;
+      width: 54px;
+      height: 54px;
       border-radius: 50%;
       padding: 2px;
       background: #e2e8f0;
@@ -91,6 +88,7 @@
       transition: box-shadow 0.3s ease, background 0.3s ease;
     }
 
+    /* Эффект свечения и пульсации, когда бот отвечает */
     .avatar-ring.speaking {
       background: linear-gradient(135deg, #3b6e8c, #68b0ab);
       box-shadow: 0 0 0 4px rgba(59, 110, 140, 0.18);
@@ -118,13 +116,13 @@
     }
 
     .robot-name {
-      font-size: 1.02rem;
+      font-size: 1.05rem;
       font-weight: 600;
       color: var(--text-main);
     }
 
     .robot-status {
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       color: var(--text-muted);
       display: flex;
       align-items: center;
@@ -140,18 +138,17 @@
       display: inline-block;
     }
 
-    /* Контейнер чата Aimylogic, задвинутый ровно на высоту синей полоски (52px) под шапку */
+    /* Контейнер, куда встраивается чат Aimylogic */
     #kvest-chat-box {
       flex: 1;
       width: 100%;
-      height: calc(100% + 52px);
+      height: 100%;
       position: relative;
-      z-index: 1;
       overflow: hidden;
       background: #ffffff;
-      margin-top: -52px;
     }
 
+    /* Растягиваем внутренний виджет на всю площадь карточки */
     #kvest-chat-box > div,
     #kvest-chat-box iframe {
       width: 100% !important;
@@ -256,7 +253,6 @@
 
 </body>
 </html>
-
 
 
 
