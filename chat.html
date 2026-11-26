@@ -75,6 +75,7 @@
       background: #ffffff;
       border-bottom: 1px solid var(--border-color);
       z-index: 2;
+      flex-shrink: 0;
     }
 
     .avatar-ring {
@@ -147,36 +148,23 @@
       background: #ffffff;
     }
 
-    /* Принудительно растягиваем ВСЕ вложенные слои виджета на 100% ширины */
-    #kvest-chat-box * {
-      max-width: 100% !important;
-    }
-
+    /* Точечно растягиваем только корневую обёртку виджета и iframe */
     #kvest-chat-box > div,
-    #kvest-chat-box > div > div,
-    #kvest-chat-box [class*="chat"],
-    #kvest-chat-box [class*="container"],
-    #kvest-chat-box [class*="wrapper"],
     #kvest-chat-box iframe {
       width: 100% !important;
-      min-width: 100% !important;
       height: 100% !important;
+      max-width: 100% !important;
       max-height: 100% !important;
       position: relative !important;
-      top: auto !important;
-      left: auto !important;
       bottom: auto !important;
       right: auto !important;
       box-shadow: none !important;
       border-radius: 0 !important;
     }
 
-    /* Скрываем стандартную синюю шапку с крестиком внутри виджета */
-    #kvest-chat-box [class*="header"],
-    #kvest-chat-box [class*="Header"],
-    #kvest-chat-box [class*="headline"],
-    #kvest-chat-box [class*="Headline"] {
-      display: none !important;
+    /* Сдвигаем внутреннюю синюю полоску наверх за край блока */
+    #kvest-chat-box {
+      margin-top: -48px;
     }
   </style>
 </head>
@@ -216,9 +204,6 @@
               id: 'kvest-chat-box',
               enabled: true
             };
-            val.options.headline = val.options.headline || {};
-            val.options.headline.show = false;
-            val.options.showCloseButton = false;
           }
           savedAttrs = val;
         }
@@ -271,5 +256,6 @@
 
 </body>
 </html>
+
 
 
