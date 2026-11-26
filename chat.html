@@ -1,36 +1,263 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Квестология — твой личный путь</title>
-    <script src="https://bot.jaicp.com/chatwidget/EzGQTMKa:e0ad90bb3a75aee04ef2352161a74420e95edbb9/justwidget.js" async></script>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #2f5b55;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            color: #ffffff;
-            text-align: center;
-        }
-        .hint {
-            opacity: 0.85;
-            font-size: 16px;
-            max-width: 340px;
-            line-height: 1.5;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Квестология — твой личный путь</title>
+  <style>
+    :root {
+      --bg-color: #f6f7f9;
+      --card-bg: #ffffff;
+      --text-main: #22262a;
+      --text-muted: #6c757d;
+      --accent: #3b6e8c;
+      --border-color: rgba(0, 0, 0, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .top-nav {
+      width: 100%;
+      max-width: 540px;
+      display: flex;
+      justify-content: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .back-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s ease;
+    }
+
+    .back-link:hover {
+      color: var(--accent);
+    }
+
+    .chat-card {
+      width: 100%;
+      max-width: 540px;
+      height: 82vh;
+      max-height: 760px;
+      min-height: 520px;
+      background: var(--card-bg);
+      border-radius: 20px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Шапка с аватаром робота */
+    .robot-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 20px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--border-color);
+      z-index: 2;
+    }
+
+    .avatar-ring {
+      position: relative;
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      padding: 2px;
+      background: #e2e8f0;
+      flex-shrink: 0;
+      transition: box-shadow 0.3s ease, background 0.3s ease;
+    }
+
+    /* Эффект свечения и пульсации, когда бот отвечает */
+    .avatar-ring.speaking {
+      background: linear-gradient(135deg, #3b6e8c, #68b0ab);
+      box-shadow: 0 0 0 4px rgba(59, 110, 140, 0.18);
+      animation: pulseRing 1.2s infinite ease-in-out;
+    }
+
+    @keyframes pulseRing {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .avatar-video {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+      background: #111;
+    }
+
+    .robot-info {
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+    }
+
+    .robot-name {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .robot-status {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background-color: #4caf50;
+      display: inline-block;
+    }
+
+    /* Контейнер, куда встраивается чат Aimylogic */
+    #kvest-chat-box {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    /* Растягиваем внутренний виджет на всю площадь карточки и убираем плавающую кнопку */
+    #kvest-chat-box > div,
+    #kvest-chat-box iframe {
+      width: 100% !important;
+      height: 100% !important;
+      max-height: 100% !important;
+      position: relative !important;
+      bottom: auto !important;
+      right: auto !important;
+      box-shadow: none !important;
+      border-radius: 0 !important;
+    }
+  </style>
 </head>
 <body>
-    <div class="hint">
-        Пространство <strong>Квестологии</strong> загружается...<br>
-        Нажми на значок чата в правом нижнем углу, если окно не открылось само.
-    </div>
+
+  <nav class="top-nav">
+    <a href="index.html" class="back-link">← На главную</a>
+  </nav>
+
+  <main class="chat-card">
+    <header class="robot-header">
+      <div id="avatarRing" class="avatar-ring">
+        <video id="robotAvatar" class="avatar-video" src="1122.mp4" muted playsinline preload="auto"></video>
+      </div>
+      <div class="robot-info">
+        <div class="robot-name">Квестология</div>
+        <div class="robot-status">
+          <span class="status-dot"></span>
+          <span id="statusText">Проводник на связи</span>
+        </div>
+      </div>
+    </header>
+
+    <div id="kvest-chat-box"></div>
+  </main>
+
+  <script>
+    // 1. Включаем встраивание виджета внутрь #kvest-chat-box до его загрузки
+    (function() {
+      var origDefine = Object.defineProperty;
+      var savedAttrs = null;
+
+      Object.defineProperty(window, 'JustWidgetAttributes', {
+        configurable: true,
+        get: function() { return savedAttrs; },
+        set: function(val) {
+          if (val && val.options) {
+            val.options.embedmentContainer = {
+              id: 'kvest-chat-box',
+              enabled: true
+            };
+            val.options.headline = val.options.headline || {};
+            val.options.headline.show = false;
+            val.options.showCloseButton = false;
+          }
+          savedAttrs = val;
+        }
+      });
+    })();
+
+    // 2. Анимация аватара при появлении новых сообщений
+    const avatarRing = document.getElementById('avatarRing');
+    const robotAvatar = document.getElementById('robotAvatar');
+    const statusText = document.getElementById('statusText');
+    const chatBox = document.getElementById('kvest-chat-box');
+    let speakTimer = null;
+
+    // Ставим видео-аватар на финальный кадр (где робот смотрит на пользователя)
+    robotAvatar.addEventListener('loadedmetadata', function() {
+      robotAvatar.currentTime = Math.max(0, robotAvatar.duration - 0.1);
+    });
+
+    function triggerRobotSpeak() {
+      avatarRing.classList.add('speaking');
+      statusText.textContent = 'Говорит...';
+
+      // Плавно проигрываем короткий фрагмент движения робота
+      try {
+        robotAvatar.currentTime = 1.2;
+        robotAvatar.play().catch(function() {});
+      } catch (e) {}
+
+      clearTimeout(speakTimer);
+      speakTimer = setTimeout(function() {
+        avatarRing.classList.remove('speaking');
+        statusText.textContent = 'Проводник на связи';
+        robotAvatar.pause();
+      }, 2800);
+    }
+
+    // Следим за появлением новых элементов в окне чата
+    const observer = new MutationObserver(function(mutations) {
+      let hasNewNodes = false;
+      mutations.forEach(function(m) {
+        if (m.addedNodes && m.addedNodes.length > 0) {
+          hasNewNodes = true;
+        }
+      });
+      if (hasNewNodes) {
+        triggerRobotSpeak();
+      }
+    });
+
+    observer.observe(chatBox, { childList: true, subtree: true });
+  </script>
+
+  <!-- Подключение вашего виджета Aimylogic -->
+  <script src="https://bot.jaicp.com/chatwidget/EzGQTMKa:e0ad90bb3a75aee04ef2352161a74420e95edbb9/justwidget.js" async></script>
+
 </body>
 </html>
+
