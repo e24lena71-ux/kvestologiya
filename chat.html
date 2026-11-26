@@ -70,7 +70,7 @@
       display: flex;
       align-items: center;
       gap: 14px;
-      padding: 14px 20px;
+      padding: 18px 20px;
       background: #ffffff;
       border-bottom: 1px solid var(--border-color);
       z-index: 2;
@@ -78,8 +78,8 @@
 
     .avatar-ring {
       position: relative;
-      width: 54px;
-      height: 54px;
+      width: 68px;
+      height: 68px;
       border-radius: 50%;
       padding: 2px;
       background: #e2e8f0;
@@ -114,18 +114,18 @@
     }
 
     .robot-name {
-      font-size: 1.05rem;
+      font-size: 1.12rem;
       font-weight: 600;
       color: var(--text-main);
     }
 
     .robot-status {
-      font-size: 0.82rem;
+      font-size: 0.85rem;
       color: var(--text-muted);
       display: flex;
       align-items: center;
       gap: 6px;
-      margin-top: 2px;
+      margin-top: 3px;
     }
 
     .status-dot {
@@ -145,11 +145,9 @@
       background: #ffffff;
     }
 
-    /* Растягиваем только само окно чата на всю ширину 560px */
+    /* Растягиваем только открытое окно чата на всю ширину 560px */
     #kvest-chat-box > div,
-    #kvest-chat-box iframe,
-    .justwidget[class*="window"],
-    .justwidget[class*="chat"] {
+    #kvest-chat-box iframe {
       width: 100% !important;
       max-width: 100% !important;
       height: 100% !important;
@@ -160,20 +158,6 @@
       left: auto !important;
       box-shadow: none !important;
       border-radius: 0 !important;
-    }
-
-    /* Схлопываем кнопку-лаунчер, чтобы она не раздувалась и не перекрывала чат */
-    .justwidget-launcher,
-    .justwidget__launcher,
-    button[class*="launcher"],
-    div[class*="launcher"] {
-      width: 1px !important;
-      height: 1px !important;
-      opacity: 0 !important;
-      pointer-events: none !important;
-      position: fixed !important;
-      bottom: 0 !important;
-      right: 0 !important;
     }
   </style>
 </head>
@@ -262,22 +246,13 @@
     });
 
     observer.observe(chatBox, { childList: true, subtree: true });
-
-    // Автоматически раскрываем чат при открытии страницы
-    const autoOpenInterval = setInterval(function() {
-      const launcher = document.querySelector('[class*="launcher"], .justwidget button');
-      if (launcher) {
-        launcher.click();
-        clearInterval(autoOpenInterval);
-      }
-    }, 300);
-    setTimeout(function() { clearInterval(autoOpenInterval); }, 5000);
   </script>
 
   <script src="https://jaicp.com" async></script>
 
 </body>
 </html>
+
 
 
 
