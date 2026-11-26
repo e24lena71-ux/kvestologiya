@@ -34,7 +34,7 @@
 
     .top-nav {
       width: 100%;
-      max-width: 360px;
+      max-width: 350px;
       display: flex;
       justify-content: flex-start;
       margin-bottom: 12px;
@@ -53,9 +53,9 @@
 
     .chat-card {
       width: 100%;
-      max-width: 360px;
+      max-width: 350px;
       height: 82vh;
-      max-height: 720px;
+      max-height: 700px;
       min-height: 520px;
       background: var(--card-bg);
       border-radius: 20px;
@@ -67,7 +67,7 @@
       position: relative;
     }
 
-    /* Шапка с аватаром робота */
+    /* Шапка с аватаром робота — всегда поверх виджета */
     .robot-header {
       display: flex;
       align-items: center;
@@ -76,7 +76,7 @@
       background: #ffffff;
       border-bottom: 1px solid var(--border-color);
       position: relative;
-      z-index: 10;
+      z-index: 999999;
       flex-shrink: 0;
     }
 
@@ -140,15 +140,16 @@
       display: inline-block;
     }
 
-    /* Контейнер, куда встраивается чат Aimylogic */
+    /* Контейнер чата Aimylogic, задвинутый ровно на высоту синей полоски (52px) под шапку */
     #kvest-chat-box {
       flex: 1;
       width: 100%;
-      height: 100%;
+      height: calc(100% + 52px);
       position: relative;
+      z-index: 1;
       overflow: hidden;
       background: #ffffff;
-      margin-top: -54px;
+      margin-top: -52px;
     }
 
     #kvest-chat-box > div,
@@ -251,10 +252,11 @@
     observer.observe(chatBox, { childList: true, subtree: true });
   </script>
 
-  <script src="https://bot.jaicp.com/chatwidget/EzGQTMKa:e0ad90bb3a75aee04ef2352161a74420e95edbb9/justwidget.js" async></script>
+  <script src="https://jaicp.com" async></script>
 
 </body>
 </html>
+
 
 
 
