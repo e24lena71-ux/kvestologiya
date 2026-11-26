@@ -137,28 +137,13 @@
       display: inline-block;
     }
 
-    #kvest-chat-box {
+    #justwidget--iframe {
       flex: 1;
       width: 100%;
       height: 100%;
-      position: relative;
-      overflow: hidden;
+      border: none;
+      display: block;
       background: #ffffff;
-    }
-
-    .justwidget,
-    #kvest-chat-box > div,
-    #kvest-chat-box iframe {
-      width: 100% !important;
-      max-width: 100% !important;
-      height: 100% !important;
-      max-height: 100% !important;
-      position: relative !important;
-      bottom: auto !important;
-      right: auto !important;
-      left: auto !important;
-      box-shadow: none !important;
-      border-radius: 0 !important;
     }
   </style>
 </head>
@@ -182,32 +167,19 @@
       </div>
     </header>
 
-    <div id="kvest-chat-box"></div>
+    <!-- Официальный встроенный iframe виджета Just AI / Aimylogic -->
+    <iframe
+      id="justwidget--iframe"
+      src="https://jaicp.com"
+      allow="microphone; autoplay">
+    </iframe>
   </main>
 
   <script>
-    (function() {
-      var savedAttrs = null;
-
-      Object.defineProperty(window, 'JustWidgetAttributes', {
-        configurable: true,
-        get: function() { return savedAttrs; },
-        set: function(val) {
-          if (val && val.options) {
-            val.options.embedmentContainer = {
-              id: 'kvest-chat-box',
-              enabled: true
-            };
-          }
-          savedAttrs = val;
-        }
-      });
-    })();
-
     const avatarRing = document.getElementById('avatarRing');
     const robotAvatar = document.getElementById('robotAvatar');
     const statusText = document.getElementById('statusText');
-    const chatBox = document.getElementById('kvest-chat-box');
+    const widgetIframe = document.getElementById('justwidget--iframe');
     let speakTimer = null;
 
     robotAvatar.addEventListener('loadedmetadata', function() {
@@ -231,41 +203,38 @@
       }, 2800);
     }
 
-    const observer = new MutationObserver(function(mutations) {
-      let hasNewNodes = false;
-      mutations.forEach(function(m) {
-        if (m.addedNodes && m.addedNodes.length > 0) {
-          hasNewNodes = true;
-        }
-      });
-      if (hasNewNodes) {
+    // Официальный API из документации Aimylogic для открытия встроенного iframe
+    function postToWidget(messageObj) {
+      if (widgetIframe && widgetIframe.contentWindow) {
+        widgetIframe.contentWindow.postMessage(JSON.stringify(messageObj), 'https://jaicp.com');
+      }
+    }
+
+    widgetIframe.addEventListener('load', function() {
+      // Открываем окно чата и отправляем скрытую команду 'start' для запуска сценария
+      setTimeout(function() {
+        postToWidget({ type: 'justWidget.open' });
+        setTimeout(function() {
+          postToWidget({
+            type: 'justWidget.sendText',
+            data: { text: 'start', hiddenMessage: true }
+          });
+          triggerRobotSpeak();
+        }, 700);
+      }, 400);
+    });
+
+    // Оживляем аватар робота при каждом ответе бота
+    window.addEventListener('message', function(event) {
+      if (event.origin === 'https://jaicp.com') {
         triggerRobotSpeak();
       }
     });
-
-    observer.observe(chatBox, { childList: true, subtree: true });
-
-    // Официальное открытие встроенного виджета и запуск сценария по слову 'start'
-    let started = false;
-    const initChecker = setInterval(function() {
-      if (window.justwidget && typeof window.justwidget.open === 'function' && !started) {
-        started = true;
-        clearInterval(initChecker);
-        window.justwidget.open();
-        setTimeout(function() {
-          if (typeof window.justwidget.sendMessage === 'function') {
-            window.justwidget.sendMessage('start');
-          }
-        }, 600);
-      }
-    }, 300);
-    setTimeout(function() { clearInterval(initChecker); }, 8000);
   </script>
-
-  <script src="https://jaicp.com" async></script>
 
 </body>
 </html>
+
 
 
 
