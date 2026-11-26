@@ -148,19 +148,27 @@
       background: #ffffff;
     }
 
-    /* Растягиваем внутренний виджет на всю площадь карточки и убираем плавающую кнопку */
+        /* Растягиваем корпус виджета на всю ширину 560px без поломки высоты */
     #kvest-chat-box > div,
-    #kvest-chat-box > div > div,
     #kvest-chat-box iframe {
       width: 100% !important;
+      max-width: 100% !important;
       height: 100% !important;
       max-height: 100% !important;
       position: relative !important;
       bottom: auto !important;
       right: auto !important;
+      left: auto !important;
       box-shadow: none !important;
       border-radius: 0 !important;
     }
+
+    #kvest-chat-box > div > div,
+    #kvest-chat-box > div > div > div {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+
   </style>
 </head>
 <body>
