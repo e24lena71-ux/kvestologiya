@@ -167,6 +167,7 @@
     const robotAvatar = document.getElementById('robotAvatar');
     const statusText = document.getElementById('statusText');
     let speakTimer = null;
+    let greetingSent = false;
 
     robotAvatar.addEventListener('loadedmetadata', function() {
       robotAvatar.currentTime = Math.max(0, robotAvatar.duration - 0.1);
@@ -189,16 +190,30 @@
       }, 2800);
     }
 
-    // Оживляем робота при появлении виджета и новых сообщений
+    // Когда виджет Aimylogic открывается, отправляем ему скрытое слово 'start',
+    // чтобы бот сразу проверил посетителя и поприветствовал его сам
     const observer = new MutationObserver(function() {
+      const iframe = document.querySelector('.justwidget iframe');
+      if (iframe && !greetingSent) {
+        greetingSent = true;
+        setTimeout(function() {
+          try {
+            iframe.contentWindow.postMessage(JSON.stringify({
+              type: 'justWidget.sendText',
+              data: { text: 'start', hiddenMessage: true }
+            }), '*');
+          } catch (e) {}
+          triggerRobotSpeak();
+        }, 1200);
+      }
       triggerRobotSpeak();
     });
 
     observer.observe(document.body, { childList: true, subtree: true });
   </script>
 
-  <!-- Родное подключение вашего виджета Aimylogic без перехватов -->
-  <script src="https://jaicp.com" async></script>
+  <!-- Восстановленная полная ссылка на ваш виджет Aimylogic -->
+  <script src="https://bot.jaicp.com/chatwidget/EzGQTMKa:e0ad90bb3a75aee04ef2352161a74420e95edbb9/justwidget.js" async></script>
 
 </body>
 </html>
