@@ -146,25 +146,25 @@
       height: 100%;
       position: relative;
       overflow: hidden;
-      background: #ffffff;
+      background: #e6f0ec;
     }
 
-    /* Принудительно встраиваем виджет Just AI внутрь карточки по центру */
+    /* Растягиваем виджет на 100% ширины и высоты без отступов */
     #kvest-chat-box > div,
-    #kvest-chat-box iframe,
-    [class*="justwidget"],
-    [id*="justwidget"] {
+    #kvest-chat-box > div > div,
+    #kvest-chat-box iframe {
       position: relative !important;
       inset: auto !important;
-      top: auto !important;
-      left: auto !important;
-      right: auto !important;
-      bottom: auto !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
       width: 100% !important;
       height: 100% !important;
       max-width: 100% !important;
       max-height: 100% !important;
       margin: 0 !important;
+      padding: 0 !important;
       box-shadow: none !important;
       border-radius: 0 !important;
       transform: none !important;
@@ -195,7 +195,7 @@
   </main>
 
   <script>
-    // 1. Получаем постоянный ID пользователя с главной страницы
+    // 1. Получаем ID пользователя с главной страницы
     const urlParams = new URLSearchParams(window.location.search);
     let userId = urlParams.get('uid') || localStorage.getItem('kvestologia_user_id');
 
@@ -206,12 +206,11 @@
 
     const chatBox = document.getElementById('kvest-chat-box');
 
-    // 2. Следим за появлением виджета в body и переносим его внутрь центральной карточки
+    // 2. Переносим виджет в нашу центральную карточку
     const bodyObserver = new MutationObserver(function(mutations) {
       mutations.forEach(function(mutation) {
         mutation.addedNodes.forEach(function(node) {
           if (node.nodeType === 1 && node.id !== 'kvest-chat-box') {
-            // Ищем контейнер виджета Just AI, который скрипт добавляет в конец страницы
             const isWidget = (node.id && node.id.toLowerCase().includes('just')) ||
                              (node.className && typeof node.className === 'string' && node.className.toLowerCase().includes('just')) ||
                              node.querySelector('iframe[src*="jaicp"]');
@@ -225,27 +224,54 @@
 
     bodyObserver.observe(document.body, { childList: true });
 
-    // 3. Открываем чат и отправляем /start при загрузке API
+    // 3. Автоматически открываем виджет, убираем крестик и отправляем /start
+    var widgetOpened = false;
     var startSent = false;
-    var widgetCheck = setInterval(function() {
-      if (window.JustWidgetApi) {
-        if (typeof window.JustWidgetApi.open === 'function') {
-          window.JustWidgetApi.open();
-        }
 
-        if (!startSent && typeof window.JustWidgetApi.sendText === 'function') {
-          startSent = true;
-          clearInterval(widgetCheck);
+    var autoOpenInterval = setInterval(function() {
+      if (!widgetOpened) {
+        const launchBtn = chatBox.querySelector('button, [role="button"]');
+        const inputField = chatBox.querySelector('textarea, input[type="text"]');
+        if (launchBtn && !inputField) {
+          launchBtn.click();
+          widgetOpened = true;
+        }
+      }
+
+      const closeBtn = chatBox.querySelector('button[aria-label*="close" i], button[title*="Закрыть" i], [class*="close" i]');
+      if (closeBtn && closeBtn.parentElement) {
+        closeBtn.parentElement.style.display = 'none';
+      }
+
+      const textInput = chatBox.querySelector('textarea, input[type="text"]');
+      if (!startSent && textInput) {
+        startSent = true;
+        clearInterval(autoOpenInterval);
+
+        if (window.JustWidgetApi && typeof window.JustWidgetApi.sendText === 'function') {
+          window.JustWidgetApi.sendText('/start');
+        } else {
           setTimeout(function() {
-            window.JustWidgetApi.sendText('/start');
-          }, 700);
+            const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set ||
+                                           Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
+            if (nativeInputValueSetter) {
+              nativeInputValueSetter.call(textInput, '/start');
+              textInput.dispatchEvent(new Event('input', { bubbles: true }));
+              
+              setTimeout(function() {
+                const buttons = chatBox.querySelectorAll('button');
+                const sendBtn = buttons[buttons.length - 1];
+                if (sendBtn) sendBtn.click();
+              }, 200);
+            }
+          }, 500);
         }
       }
     }, 300);
 
-    setTimeout(function() { clearInterval(widgetCheck); }, 12000);
+    setTimeout(function() { clearInterval(autoOpenInterval); }, 15000);
 
-    // 4. Анимация аватара робота
+    // 4. Анимация аватара робота при появлении сообщений
     const avatarRing = document.getElementById('avatarRing');
     const robotAvatar = document.getElementById('robotAvatar');
     const statusText = document.getElementById('statusText');
