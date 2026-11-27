@@ -1,225 +1,37 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Квестология — твой личный путь</title>
-  <script src="https://jaicp.com" async></script>
-  <style>
-    :root {
-      --bg-color: #f6f7f9;
-      --card-bg: #ffffff;
-      --text-main: #22262a;
-      --text-muted: #6c757d;
-      --accent: #3b6e8c;
-      --border-color: rgba(0, 0, 0, 0.08);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px 16px;
-    }
-
-    .top-nav {
-      width: 100%;
-      max-width: 480px;
-      display: flex;
-      justify-content: flex-start;
-      margin-bottom: 12px;
-    }
-
-    .back-link {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 0.9rem;
-      transition: color 0.2s ease;
-    }
-
-    .back-link:hover {
-      color: var(--accent);
-    }
-
-    .robot-header {
-      width: 100%;
-      max-width: 480px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 18px 22px;
-      background: #ffffff;
-      border-radius: 20px 20px 0 0;
-      border: 1px solid var(--border-color);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-      position: relative;
-      z-index: 10;
-    }
-
-    .avatar-ring {
-      position: relative;
-      width: 68px;
-      height: 68px;
-      border-radius: 50%;
-      padding: 2px;
-      background: #e2e8f0;
-      flex-shrink: 0;
-      transition: box-shadow 0.3s ease, background 0.3s ease;
-    }
-
-    .avatar-ring.speaking {
-      background: linear-gradient(135deg, #3b6e8c, #68b0ab);
-      box-shadow: 0 0 0 4px rgba(59, 110, 140, 0.18);
-      animation: pulseRing 1.2s infinite ease-in-out;
-    }
-
-    @keyframes pulseRing {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-    }
-
-    .avatar-video {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      object-fit: cover;
-      display: block;
-      background: #111;
-    }
-
-    .robot-info {
-      display: flex;
-      flex-direction: column;
-      text-align: left;
-    }
-
-    .robot-name {
-      font-size: 1.12rem;
-      font-weight: 600;
-      color: var(--text-main);
-    }
-
-    .robot-status {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 3px;
-    }
-
-    .status-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background-color: #4caf50;
-      display: inline-block;
-    }
-
-    .loading-hint {
-      margin-top: 80px;
-      color: var(--text-muted);
-      font-size: 0.95rem;
-    }
-
-    /* Ставим штатный виджет Aimylogic по центру экрана прямо под шапку */
-    .justwidget {
-      position: fixed !important;
-      top: 155px !important;
-      left: 50% !important;
-      transform: translateX(-50%) !important;
-      bottom: 24px !important;
-      right: auto !important;
-      width: calc(100% - 32px) !important;
-      max-width: 480px !important;
-      height: auto !important;
-      max-height: calc(100vh - 180px) !important;
-      border-radius: 0 0 20px 20px !important;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08) !important;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Квестология — твой личный путь</title>
+    <script src="https://jaicp.com" async></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #2f5b55;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            color: #ffffff;
+            text-align: center;
+        }
+        .hint {
+            opacity: 0.85;
+            font-size: 16px;
+            max-width: 340px;
+            line-height: 1.5;
+        }
+    </style>
 </head>
 <body>
-
-  <nav class="top-nav">
-    <a href="index.html" class="back-link">← На главную</a>
-  </nav>
-
-  <header class="robot-header">
-    <div id="avatarRing" class="avatar-ring">
-      <video id="robotAvatar" class="avatar-video" src="1122.mp4" muted playsinline preload="auto"></video>
+    <div class="hint">
+        Пространство <strong>Квестологии</strong> загружается...<br>
+        Нажми на значок чата в правом нижнем углу, если окно не открылось само.
     </div>
-    <div class="robot-info">
-      <div class="robot-name">Квестология</div>
-      <div class="robot-status">
-        <span class="status-dot"></span>
-        <span id="statusText">Проводник на связи</span>
-      </div>
-    </div>
-  </header>
-
-  <div class="loading-hint">Пространство Квестологии открывается...</div>
-
-  <script>
-    const avatarRing = document.getElementById('avatarRing');
-    const robotAvatar = document.getElementById('robotAvatar');
-    const statusText = document.getElementById('statusText');
-    let speakTimer = null;
-
-    robotAvatar.addEventListener('loadedmetadata', function() {
-      robotAvatar.currentTime = Math.max(0, robotAvatar.duration - 0.1);
-    });
-
-    function triggerRobotSpeak() {
-      avatarRing.classList.add('speaking');
-      statusText.textContent = 'Говорит...';
-
-      try {
-        robotAvatar.currentTime = 1.2;
-        robotAvatar.play().catch(function() {});
-      } catch (e) {}
-
-      clearTimeout(speakTimer);
-      speakTimer = setTimeout(function() {
-        avatarRing.classList.remove('speaking');
-        statusText.textContent = 'Проводник на связи';
-        robotAvatar.pause();
-      }, 2800);
-    }
-
-    // Безопасный запуск без зависаний: ждём появления окна виджета и подаём команду start
-    let attempts = 0;
-    const bootTimer = setInterval(function() {
-      attempts++;
-      const iframe = document.querySelector('.justwidget iframe');
-      if (iframe && iframe.contentWindow) {
-        clearInterval(bootTimer);
-        setTimeout(function() {
-          try {
-            iframe.contentWindow.postMessage(JSON.stringify({
-              type: 'justWidget.sendText',
-              data: { text: 'start', hiddenMessage: true }
-            }), '*');
-          } catch (e) {}
-          triggerRobotSpeak();
-        }, 1200);
-      }
-      if (attempts > 30) {
-        clearInterval(bootTimer);
-      }
-    }, 300);
-  </script>
-
 </body>
 </html>
 
