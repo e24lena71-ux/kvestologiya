@@ -29,7 +29,6 @@
       color: #6c757d;
       text-decoration: none;
       font-size: 0.9rem;
-      transition: color 0.2s ease;
     }
 
     .back-link:hover { color: #3b6e8c; }
@@ -95,7 +94,7 @@
       background-color: #4caf50;
     }
 
-    /* Контейнер для чата */
+    /* Контейнер для встраивания чата (проверенный вариант, где виджет точно виден) */
     #kvest-chat-box {
       flex: 1;
       width: 100%;
@@ -103,34 +102,17 @@
       position: relative;
       overflow: hidden;
       background: #E6F0EC;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
 
-    /* Удерживаем и кнопку, и раскрытое окно чата строго внутри карточки */
-    #kvest-chat-box > div,
-    #kvest-chat-box > div > div {
-      position: relative !important;
-      inset: auto !important;
-      top: auto !important;
-      left: auto !important;
-      right: auto !important;
-      bottom: auto !important;
+    #kvest-chat-box > div {
       width: 100% !important;
       height: 100% !important;
-      max-width: 100% !important;
       max-height: 100% !important;
+      position: relative !important;
+      bottom: auto !important;
+      right: auto !important;
       box-shadow: none !important;
       border-radius: 0 !important;
-    }
-
-    /* Делаем кнопку-робота яркой и заметной, если она отображается до открытия */
-    #kvest-chat-box button[class*="launcher"],
-    #kvest-chat-box > div > button {
-      border: 2px solid #3b6e8c !important;
-      box-shadow: 0 8px 24px rgba(59, 110, 140, 0.28) !important;
-      background-color: #ffffff !important;
     }
   </style>
 </head>
@@ -158,13 +140,13 @@
   </main>
 
   <script>
-    // 1. Статичный кадр робота в шапке
+    // 1. Статичный кадр робота
     const robotAvatar = document.getElementById('robotAvatar');
     robotAvatar.addEventListener('loadedmetadata', function() {
       robotAvatar.currentTime = Math.max(0, robotAvatar.duration - 0.1);
     });
 
-    // 2. Включаем штатное встраивание в блок #kvest-chat-box
+    // 2. Настраиваем встраивание в блок
     var _attrs = null;
     Object.defineProperty(window, 'JustWidgetAttributes', {
       configurable: true,
@@ -183,18 +165,22 @@
     wScript.async = true;
     document.body.appendChild(wScript);
 
-    // 4. Аккуратно раскрываем чат через 1 секунду после полной отрисовки виджета
-    setTimeout(function() {
-      var box = document.getElementById('kvest-chat-box');
-      var btn = box ? box.querySelector('button') : null;
-      if (btn) {
-        btn.click();
+    // 4. Раскрываем окно через штатный метод виджета после его инициализации
+    var tries = 0;
+    var timer = setInterval(function() {
+      tries++;
+      if (window.JustWidgetApi && typeof window.JustWidgetApi.open === 'function') {
+        window.JustWidgetApi.open();
+        clearInterval(timer);
+      } else if (tries > 25) {
+        clearInterval(timer);
       }
-    }, 1000);
+    }, 300);
   </script>
 
 </body>
 </html>
+
 
 
 
