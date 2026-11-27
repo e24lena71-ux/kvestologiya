@@ -34,7 +34,7 @@
 
     .top-nav {
       width: 100%;
-      max-width: 520px;
+      max-width: 350px;
       display: flex;
       justify-content: flex-start;
       margin-bottom: 12px;
@@ -53,7 +53,7 @@
 
     .chat-card {
       width: 100%;
-      max-width: 520px;
+      max-width: 350px;
       height: 82vh;
       max-height: 760px;
       min-height: 520px;
@@ -66,21 +66,21 @@
       overflow: hidden;
     }
 
+    /* Шапка с аватаром робота */
     .robot-header {
       display: flex;
       align-items: center;
-      gap: 16px;
-      padding: 18px 22px;
+      gap: 14px;
+      padding: 14px 20px;
       background: #ffffff;
       border-bottom: 1px solid var(--border-color);
       z-index: 2;
-      flex-shrink: 0;
     }
 
     .avatar-ring {
       position: relative;
-      width: 68px;
-      height: 68px;
+      width: 54px;
+      height: 54px;
       border-radius: 50%;
       padding: 2px;
       background: #e2e8f0;
@@ -88,6 +88,7 @@
       transition: box-shadow 0.3s ease, background 0.3s ease;
     }
 
+    /* Эффект свечения и пульсации, когда бот отвечает */
     .avatar-ring.speaking {
       background: linear-gradient(135deg, #3b6e8c, #68b0ab);
       box-shadow: 0 0 0 4px rgba(59, 110, 140, 0.18);
@@ -115,18 +116,18 @@
     }
 
     .robot-name {
-      font-size: 1.12rem;
+      font-size: 1.05rem;
       font-weight: 600;
       color: var(--text-main);
     }
 
     .robot-status {
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       color: var(--text-muted);
       display: flex;
       align-items: center;
       gap: 6px;
-      margin-top: 3px;
+      margin-top: 2px;
     }
 
     .status-dot {
@@ -137,26 +138,25 @@
       display: inline-block;
     }
 
+    /* Контейнер, куда встраивается чат Aimylogic */
     #kvest-chat-box {
       flex: 1;
       width: 100%;
       height: 100%;
       position: relative;
       overflow: hidden;
-      background: #E6F0EC;
+      background: #ffffff;
     }
 
-    /* Растягиваем встроенный виджет defaultv3 на всю ширину карточки */
-    #kvest-chat-box .justwidget,
-    #kvest-chat-box > div {
+    /* Растягиваем внутренний виджет на всю площадь карточки */
+    #kvest-chat-box > div,
+    #kvest-chat-box iframe {
       width: 100% !important;
-      max-width: 100% !important;
       height: 100% !important;
       max-height: 100% !important;
       position: relative !important;
       bottom: auto !important;
       right: auto !important;
-      left: auto !important;
       box-shadow: none !important;
       border-radius: 0 !important;
     }
@@ -186,9 +186,31 @@
   </main>
 
   <script>
+    (function() {
+      var savedAttrs = null;
+
+      Object.defineProperty(window, 'JustWidgetAttributes', {
+        configurable: true,
+        get: function() { return savedAttrs; },
+        set: function(val) {
+          if (val && val.options) {
+            val.options.embedmentContainer = {
+              id: 'kvest-chat-box',
+              enabled: true
+            };
+            val.options.headline = val.options.headline || {};
+            val.options.headline.show = false;
+            val.options.showCloseButton = false;
+          }
+          savedAttrs = val;
+        }
+      });
+    })();
+
     const avatarRing = document.getElementById('avatarRing');
     const robotAvatar = document.getElementById('robotAvatar');
     const statusText = document.getElementById('statusText');
+    const chatBox = document.getElementById('kvest-chat-box');
     let speakTimer = null;
 
     robotAvatar.addEventListener('loadedmetadata', function() {
@@ -212,127 +234,22 @@
       }, 2800);
     }
 
-    // Родная инициализация вашего виджета Aimylogic с встраиванием в центральный блок
-    (function() {
-      window.JustWidgetBasePath = "https://bot.jaicp.com/chatwidget/EzGQTMKa:e0ad90bb3a75aee04ef2352161a74420e95edbb9";
-      window.JustWidgetAttributes = {
-        "senderName": "Квестология",
-        "options": {
-          "headline": { "text": "", "hide": "Свернуть", "show": false },
-          "names": { "assistantName": "", "userName": "", "show": false },
-          "captions": {
-            "inputPlaceholder": "Напиши ответ...",
-            "loadHistory": "Загрузить историю сообщений",
-            "errorOccurred": "Возникла ошибка",
-            "viewLog": "посмотреть лог ошибки",
-            "errorLog": "Лог ошибки",
-            "copyLog": "Скопировать лог",
-            "closeLog": "Закрыть",
-            "imageDownload": "Закрыть",
-            "dndLabel": "Перетащите файл сюда"
-          },
-          "sessionByUserMessage": {
-            "show": false,
-            "welcomemessage": "",
-            "delay": 0,
-            "buttonsShow": false,
-            "buttons": []
-          },
-          "bubble": { "show": false, "delay": 10, "bubbletext": "", "mobileBubbletext": "" },
-          "involvement": { "enabled": true, "events": [{ "eventType": "website_time", "value": "0" }] },
-          "position": "right",
-          "fileUpload": { "show": false, "uploadErrorMessage": "", "tooBigFileMessage": "" },
-          "showLogo": false,
-          "logo": "",
-          "channel": null,
-          "percentage": 100,
-          "blockForm": { "show": false },
-          "sendBtn": { "show": true },
-          "avatar": { "show": false, "assistantAvatarUrl": "", "userAvatarUrl": "", "operatorAvatarUrl": "", "size": 24 },
-          "linkPreview": { "show": true },
-          "positionOffset": { "bottom": 0, "right": 0 },
-          "palette": {
-            "headlineBackgroundColor": "#FFFFFF",
-            "headlineTextColor": "dark",
-            "chatBackgroundColor": "#E6F0EC",
-            "chatBackgroundOpacity": 100,
-            "userMessageBackgroundColor": "#CBDFF8",
-            "userMessageTextColor": "dark",
-            "botMessageBackgroundColor": "#F4F5F5",
-            "botMessageTextColor": "dark",
-            "formButtonsColor": "#3B6E8C",
-            "formTextColor": "#000"
-          },
-          "font": "Roboto",
-          "sizes": { "font": "small", "avatar": "big" },
-          "blinkOnNewMessage": true,
-          "buttonsSamePlace": false,
-          "soundNotification": { "option": "none", "sound": "" },
-          "embedmentContainer": { "id": "kvest-chat-box", "enabled": true },
-          "showCloseButton": false,
-          "showSpinner": true,
-          "hidePoweredByJustAI": false
-        },
-        "theme": "defaultv3",
-        "position": "right",
-        "percentage": 100,
-        "audioMessageLimits": { "fileSizeLimitInMb": 5, "fileSizeLimitInSec": 30, "requestTimeoutInSec": 30 }
-      };
-      window.JustWidgetFileHosts = ["4f1004e6-2d6e-4caa-8c79-8b63d8785284.selstorage.ru"];
-      window.JustWidgetName = "1000281640-chat-1000281640-dsn-20953073700";
-      window.JustWidgetAccountId = "1000281640";
-      window.JustWidgetToken = "EzGQTMKa:e0ad90bb3a75aee04ef2352161a74420e95edbb9";
-
-      var style = document.createElement('link');
-      style.rel = 'stylesheet';
-      style.href = window.JustWidgetBasePath + "/s/defaultv3/css/index.css";
-      style.dataset.origin = 'justwidget';
-      document.head.appendChild(style);
-
-      var script = document.createElement('script');
-      script.type = 'text/javascript';
-      script.charset = 'utf-8';
-      script.src = window.JustWidgetBasePath + "/s/defaultv3/js/index.js";
-      script.dataset.origin = 'justwidget';
-      document.body.appendChild(script);
-    })();
-
-    // Оживляем робота при появлении сообщений только внутри окна чата
-    const chatBox = document.getElementById('kvest-chat-box');
     const observer = new MutationObserver(function(mutations) {
-      let hasNew = false;
+      let hasNewNodes = false;
       mutations.forEach(function(m) {
-        if (m.addedNodes && m.addedNodes.length > 0) hasNew = true;
+        if (m.addedNodes && m.addedNodes.length > 0) {
+          hasNewNodes = true;
+        }
       });
-      if (hasNew) triggerRobotSpeak();
-    });
-    observer.observe(chatBox, { childList: true, subtree: true });
-
-    // Автоматически запускаем сценарий по слову 'start' после загрузки чата
-    let autoStarted = false;
-    const startChecker = setInterval(function() {
-      const input = chatBox.querySelector('textarea, input[type="text"]');
-      const sendBtn = chatBox.querySelector('button[type="submit"], [class*="send"]');
-      if (input && sendBtn && !autoStarted) {
-        autoStarted = true;
-        clearInterval(startChecker);
-        setTimeout(function() {
-          const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value');
- 
-          if (nativeSetter && nativeSetter.set) {
-            nativeSetter.set.call(input, 'start');
-          } else {
-            input.value = 'start';
-          }
-          input.dispatchEvent(new Event('input', { bubbles: true }));
-          setTimeout(function() {
-            sendBtn.click();
-          }, 150);
-        }, 600);
+      if (hasNewNodes) {
+        triggerRobotSpeak();
       }
-    }, 300);
-    setTimeout(function() { clearInterval(startChecker); }, 10000);
+    });
+
+    observer.observe(chatBox, { childList: true, subtree: true });
   </script>
+
+  <script src="https://jaicp.com" async></script>
 
 </body>
 </html>
