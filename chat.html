@@ -21,7 +21,7 @@
 
     .top-nav {
       width: 100%;
-      max-width: 390px;
+      max-width: 400px;
       margin-bottom: 12px;
     }
 
@@ -29,18 +29,19 @@
       color: #6c757d;
       text-decoration: none;
       font-size: 0.9rem;
+      transition: color 0.2s ease;
     }
 
     .back-link:hover { color: #3b6e8c; }
 
     .chat-card {
       width: 100%;
-      max-width: 390px;
+      max-width: 400px;
       height: 82vh;
       max-height: 760px;
       min-height: 540px;
       background: #ffffff;
-      border-radius: 20px;
+      border-radius: 22px;
       box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
       border: 1px solid rgba(0, 0, 0, 0.08);
       display: flex;
@@ -53,6 +54,7 @@
       align-items: center;
       gap: 14px;
       padding: 14px 20px;
+      background: #ffffff;
       border-bottom: 1px solid rgba(0, 0, 0, 0.08);
       flex-shrink: 0;
     }
@@ -64,6 +66,12 @@
       padding: 2px;
       background: #e2e8f0;
       flex-shrink: 0;
+      transition: box-shadow 0.3s ease, background 0.3s ease;
+    }
+
+    .avatar-ring.active {
+      background: linear-gradient(135deg, #3b6e8c, #68b0ab);
+      box-shadow: 0 0 0 4px rgba(59, 110, 140, 0.16);
     }
 
     .avatar-video {
@@ -93,7 +101,7 @@
       background-color: #4caf50;
     }
 
-    /* Контейнер для встраивания чата по центру карточки */
+    /* Контейнер для встраивания чата */
     #kvest-chat-box {
       flex: 1;
       width: 100%;
@@ -123,7 +131,7 @@
 
   <main class="chat-card">
     <header class="robot-header">
-      <div class="avatar-ring">
+      <div id="avatarRing" class="avatar-ring">
         <video id="robotAvatar" class="avatar-video" src="1122.mp4" muted playsinline preload="metadata"></video>
       </div>
       <div>
@@ -135,18 +143,18 @@
       </div>
     </header>
 
-    <!-- Блок, куда встроится чат -->
     <div id="kvest-chat-box"></div>
   </main>
 
   <script>
-    // 1. Ставим аватар на статичный кадр
+    // 1. Ставим аватар на финальный кадр
     const robotAvatar = document.getElementById('robotAvatar');
+    const avatarRing = document.getElementById('avatarRing');
     robotAvatar.addEventListener('loadedmetadata', function() {
       robotAvatar.currentTime = Math.max(0, robotAvatar.duration - 0.1);
     });
 
-    // 2. Включаем штатное встраивание в блок #kvest-chat-box при инициализации виджета
+    // 2. Включаем встраивание в блок #kvest-chat-box
     var _attrs = null;
     Object.defineProperty(window, 'JustWidgetAttributes', {
       configurable: true,
@@ -159,11 +167,28 @@
       }
     });
 
-    // 3. Подключаем скрипт виджета (собираем адрес из частей, чтобы редактор не обрезал ссылку)
+    // 3. Подключаем скрипт виджета
     var wScript = document.createElement('script');
-    wScript.src = 'https://bot.jaicp.com/chatwidget/' + 'EzGQTMKa:e0ad90bb3a75aee04ef2352161a74420e95edbb9' + '/justwidget.js';
+    wScript.src = 'https://jaicp.com' + 'EzGQTMKa:e0ad90bb3a75aee04ef2352161a74420e95edbb9' + '/justwidget.js';
     wScript.async = true;
     document.body.appendChild(wScript);
+
+    // 4. Один раз раскрываем окно чата вместо круглой кнопки внизу (без нагрузки на страницу)
+    var openAttempts = 0;
+    var openTimer = setInterval(function() {
+      openAttempts++;
+      var box = document.getElementById('kvest-chat-box');
+      var launchBtn = box ? box.querySelector('button') : null;
+      var hasInput = box ? box.querySelector('textarea, input') : null;
+
+      if (launchBtn && !hasInput) {
+        launchBtn.click();
+        avatarRing.classList.add('active');
+        clearInterval(openTimer);
+      } else if (hasInput || openAttempts > 20) {
+        clearInterval(openTimer);
+      }
+    }, 300);
   </script>
 
 </body>
