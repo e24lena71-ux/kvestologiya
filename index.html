@@ -83,24 +83,61 @@
 
     .bottom-text.show { opacity: 1; visibility: visible; transform: translateY(0); }
 
-    .cta-button {
-      display: inline-block;
+    /* Обёртка вашей кнопки «Твой ход» */
+    .cta-wrapper {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       background-color: #3b6e8c;
       color: #ffffff;
-      text-decoration: none;
       font-size: 1.05rem;
       font-weight: 500;
       padding: 14px 36px;
       border-radius: 30px;
       box-shadow: 0 6px 18px rgba(59, 110, 140, 0.25);
+      cursor: pointer;
+      overflow: hidden;
       opacity: 0;
       visibility: hidden;
       transform: translateY(10px);
       transition: opacity 0.9s ease, transform 0.9s ease, background-color 0.25s ease;
     }
 
-    .cta-button.show { opacity: 1; visibility: visible; transform: translateY(0); }
-    .cta-button:hover { background-color: #2d556d; transform: translateY(-2px); }
+    .cta-wrapper.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .cta-wrapper:hover {
+      background-color: #2d556d;
+      transform: translateY(-2px);
+    }
+
+    /* Прозрачный слой с виджетом прямо поверх вашей кнопки */
+    #widget-overlay {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0; /* Полностью прозрачный, но кликабельный! */
+      z-index: 10;
+    }
+
+    /* Растягиваем кнопку-робота на всю площадь вашей кнопки «Твой ход» */
+    #widget-overlay > div,
+    #widget-overlay button {
+      width: 100% !important;
+      height: 100% !important;
+      min-width: 100% !important;
+      min-height: 100% !important;
+      position: absolute !important;
+      inset: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      cursor: pointer !important;
+    }
   </style>
 </head>
 <body>
@@ -119,7 +156,12 @@
       <p id="bottomText" class="bottom-text">
         Когда жизнь застревает на одном уровне, психология становится инструментом перехода на следующий
       </p>
-      <a id="ctaButton" href="chat.html" class="cta-button">Твой ход</a>
+
+      <!-- Ваша кнопка «Твой ход» со встроенным прозрачным виджетом внутри -->
+      <div id="ctaButton" class="cta-wrapper">
+        <span>Твой ход</span>
+        <div id="widget-overlay"></div>
+      </div>
     </div>
   </main>
 
@@ -150,10 +192,34 @@
       video.play();
       soundBtn.classList.add('hidden');
     });
+
+    // Подключаем виджет и переносим его кнопку-робота внутрь прозрачного слоя кнопки «Твой ход»
+    var wScript = document.createElement('script');
+    wScript.src = 'https://jaicp.com' + 'EzGQTMKa:e0ad90bb3a75aee04ef2352161a74420e95edbb9' + '/justwidget.js';
+    wScript.async = true;
+    document.body.appendChild(wScript);
+
+    // Аккуратно помещаем кнопку виджета внутрь #widget-overlay, как только она появится
+    var moveTimer = setInterval(function() {
+      var overlay = document.getElementById('widget-overlay');
+      // Ищем созданный виджетом контейнер в body
+      var candidates = document.querySelectorAll('body > div');
+      for (var i = 0; i < candidates.length; i++) {
+        var el = candidates[i];
+        if (el.querySelector && el.querySelector('button') && !el.classList.contains('container')) {
+          overlay.appendChild(el);
+          clearInterval(moveTimer);
+          break;
+        }
+      }
+    }, 300);
+
+    setTimeout(function() { clearInterval(moveTimer); }, 10000);
   </script>
 
 </body>
 </html>
+
 
 
 
