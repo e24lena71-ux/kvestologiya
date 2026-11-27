@@ -68,6 +68,7 @@
       align-items: center;
       gap: 20px;
       min-height: 120px;
+      position: relative;
     }
 
     .bottom-text {
@@ -83,7 +84,7 @@
 
     .bottom-text.show { opacity: 1; visibility: visible; transform: translateY(0); }
 
-    /* Обёртка вашей кнопки «Твой ход» */
+    /* Ваша кнопка «Твой ход» (БЕЗ overflow: hidden) */
     .cta-wrapper {
       position: relative;
       display: inline-flex;
@@ -97,7 +98,6 @@
       border-radius: 30px;
       box-shadow: 0 6px 18px rgba(59, 110, 140, 0.25);
       cursor: pointer;
-      overflow: hidden;
       opacity: 0;
       visibility: hidden;
       transform: translateY(10px);
@@ -115,28 +115,48 @@
       transform: translateY(-2px);
     }
 
-    /* Прозрачный слой с виджетом прямо поверх вашей кнопки */
-    #widget-overlay {
+    /* Прозрачный контейнер виджета поверх кнопки */
+    #kvest-trigger-box {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
-      opacity: 0; /* Полностью прозрачный, но кликабельный! */
-      z-index: 10;
+      opacity: 0;
+      z-index: 20;
     }
 
-    /* Растягиваем кнопку-робота на всю площадь вашей кнопки «Твой ход» */
-    #widget-overlay > div,
-    #widget-overlay button {
+    /* Растягиваем кнопку-робота на всю площадь «Твой ход» */
+    #kvest-trigger-box > div,
+    #kvest-trigger-box button {
       width: 100% !important;
       height: 100% !important;
       min-width: 100% !important;
       min-height: 100% !important;
       position: absolute !important;
       inset: 0 !important;
-      margin: 0 !important;
-      padding: 0 !important;
+      border-radius: 30px !important;
       cursor: pointer !important;
+    }
+
+    /* Когда чат открыт — показываем его по центру поверх страницы */
+    body.chat-opened #kvest-trigger-box {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 390px;
+      max-width: 94vw;
+      height: 82vh;
+      max-height: 740px;
+      opacity: 1;
+      z-index: 9999;
+      border-radius: 20px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+    }
+
+    body.chat-opened #kvest-trigger-box > div {
+      border-radius: 20px !important;
     }
   </style>
 </head>
@@ -157,10 +177,10 @@
         Когда жизнь застревает на одном уровне, психология становится инструментом перехода на следующий
       </p>
 
-      <!-- Ваша кнопка «Твой ход» со встроенным прозрачным виджетом внутри -->
+      <!-- Кнопка «Твой ход» с прозрачной кнопкой виджета внутри -->
       <div id="ctaButton" class="cta-wrapper">
         <span>Твой ход</span>
-        <div id="widget-overlay"></div>
+        <div id="kvest-trigger-box"></div>
       </div>
     </div>
   </main>
@@ -170,13 +190,14 @@
     const soundBtn = document.getElementById('soundBtn');
     const bottomText = document.getElementById('bottomText');
     const ctaButton = document.getElementById('ctaButton');
+    const triggerBox = document.getElementById('kvest-trigger-box');
     let stepStarted = false;
 
     function startSequence() {
       if (stepStarted) return;
       stepStarted = true;
       bottomText.classList.add('show');
-      setTimeout(() => ctaButton.classList.add('show'), 2500);
+      setTimeout(() => ctaButton.classList.add('show'), 2000);
     }
 
     video.addEventListener('ended', function() {
@@ -193,32 +214,36 @@
       soundBtn.classList.add('hidden');
     });
 
-    // Подключаем виджет и переносим его кнопку-робота внутрь прозрачного слоя кнопки «Твой ход»
+    // 1. Встраиваем виджет прямо внутрь прозрачного блока кнопки «Твой ход»
+    var _attrs = null;
+    Object.defineProperty(window, 'JustWidgetAttributes', {
+      configurable: true,
+      get: function() { return _attrs; },
+      set: function(val) {
+        if (val && val.options) {
+          val.options.embedmentContainer = { id: 'kvest-trigger-box', enabled: true };
+        }
+        _attrs = val;
+      }
+    });
+
+    // 2. Подключаем скрипт виджета
     var wScript = document.createElement('script');
     wScript.src = 'https://jaicp.com' + 'EzGQTMKa:e0ad90bb3a75aee04ef2352161a74420e95edbb9' + '/justwidget.js';
     wScript.async = true;
     document.body.appendChild(wScript);
 
-    // Аккуратно помещаем кнопку виджета внутрь #widget-overlay, как только она появится
-    var moveTimer = setInterval(function() {
-      var overlay = document.getElementById('widget-overlay');
-      // Ищем созданный виджетом контейнер в body
-      var candidates = document.querySelectorAll('body > div');
-      for (var i = 0; i < candidates.length; i++) {
-        var el = candidates[i];
-        if (el.querySelector && el.querySelector('button') && !el.classList.contains('container')) {
-          overlay.appendChild(el);
-          clearInterval(moveTimer);
-          break;
-        }
-      }
-    }, 300);
-
-    setTimeout(function() { clearInterval(moveTimer); }, 10000);
+    // 3. При нажатии на кнопку раскрываем виджет по центру экрана
+    triggerBox.addEventListener('click', function() {
+      setTimeout(function() {
+        document.body.classList.add('chat-opened');
+      }, 150);
+    });
   </script>
 
 </body>
 </html>
+
 
 
 
