@@ -237,6 +237,56 @@
     }
 
     window.addEventListener('load', initChatOnEntry);
+       <script>
+    // Анимация аватара робота при появлении сообщений
+    const avatarRing = document.getElementById('avatarRing');
+    const robotAvatar = document.getElementById('robotAvatar');
+    const statusText = document.getElementById('statusText');
+    const chatBox = document.getElementById('kvest-chat-box');
+    let speakTimer = null;
+
+    robotAvatar.addEventListener('loadedmetadata', function() {
+      robotAvatar.currentTime = Math.max(0, robotAvatar.duration - 0.1);
+    });
+
+    function triggerRobotSpeak() {
+      avatarRing.classList.add('speaking');
+      statusText.textContent = 'Говорит...';
+
+      try {
+        robotAvatar.currentTime = 1.2;
+        robotAvatar.play().catch(function() {});
+      } catch (e) {}
+
+      clearTimeout(speakTimer);
+      speakTimer = setTimeout(function() {
+        avatarRing.classList.remove('speaking');
+        statusText.textContent = 'Проводник на связи';
+        robotAvatar.pause();
+      }, 2800);
+    }
+
+    const observer = new MutationObserver(function(mutations) {
+      let hasNewNodes = false;
+      mutations.forEach(function(m) {
+        if (m.addedNodes && m.addedNodes.length > 0) {
+          hasNewNodes = true;
+        }
+      });
+      if (hasNewNodes) {
+        triggerRobotSpeak();
+      }
+    });
+
+    observer.observe(chatBox, { childList: true, subtree: true });
+  </script>
+
+  <!-- Подключение самого чат-бота Aimylogic -->
+  <script src="https://jaicp.com" async></script>
+
+</body>
+</html>
+
   </script>
  
 
