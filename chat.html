@@ -185,7 +185,7 @@
     <div id="kvest-chat-box"></div>
   </main>
 
-   <script>
+  <script>
     // 1. Получаем ID, который сформировала кнопка «Твой ход» (из URL или localStorage)
     const urlParams = new URLSearchParams(window.location.search);
     let userId = urlParams.get('uid') || localStorage.getItem('kvestologia_user_id');
@@ -226,8 +226,6 @@
       var checkApi = setInterval(function() {
         if (window.JustWidgetApi && typeof window.JustWidgetApi.sendText === 'function') {
           clearInterval(checkApi);
-          
-          // Проверяем, был ли переход с кнопки (или запускаем в любом случае при пустом чате)
           sessionStorage.removeItem('kvest_entry_triggered');
           window.JustWidgetApi.sendText('/start');
         }
@@ -237,8 +235,8 @@
     }
 
     window.addEventListener('load', initChatOnEntry);
-       <script>
-    // Анимация аватара робота при появлении сообщений
+
+    // 4. Анимация аватара робота при появлении сообщений
     const avatarRing = document.getElementById('avatarRing');
     const robotAvatar = document.getElementById('robotAvatar');
     const statusText = document.getElementById('statusText');
@@ -282,12 +280,11 @@
   </script>
 
   <!-- Подключение самого чат-бота Aimylogic -->
-  <script src="https://jaicp.com" async></script>
+  <script src="https://bot.jaicp.com/chatwidget/EzGQTMKa:e0ad90bb3a75aee04ef2352161a74420e95edbb9/justwidget.js" async></script>
 
 </body>
 </html>
 
-  </script>
  
 
 
