@@ -34,7 +34,7 @@
 
     .top-nav {
       width: 100%;
-      max-width: 350px;
+      max-width: 390px;
       display: flex;
       justify-content: flex-start;
       margin-bottom: 12px;
@@ -53,10 +53,10 @@
 
     .chat-card {
       width: 100%;
-      max-width: 350px;
+      max-width: 390px;
       height: 82vh;
       max-height: 760px;
-      min-height: 520px;
+      min-height: 540px;
       background: var(--card-bg);
       border-radius: 20px;
       box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
@@ -64,6 +64,7 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      position: relative;
     }
 
     /* Шапка с аватаром робота */
@@ -75,6 +76,7 @@
       background: #ffffff;
       border-bottom: 1px solid var(--border-color);
       z-index: 2;
+      flex-shrink: 0;
     }
 
     .avatar-ring {
@@ -88,7 +90,6 @@
       transition: box-shadow 0.3s ease, background 0.3s ease;
     }
 
-    /* Эффект свечения и пульсации, когда бот отвечает */
     .avatar-ring.speaking {
       background: linear-gradient(135deg, #3b6e8c, #68b0ab);
       box-shadow: 0 0 0 4px rgba(59, 110, 140, 0.18);
@@ -138,7 +139,7 @@
       display: inline-block;
     }
 
-    /* Контейнер, куда встраивается чат Aimylogic */
+    /* Центральный контейнер для чата */
     #kvest-chat-box {
       flex: 1;
       width: 100%;
@@ -148,17 +149,25 @@
       background: #ffffff;
     }
 
-    /* Растягиваем внутренний виджет на всю площадь карточки */
+    /* Принудительно встраиваем виджет Just AI внутрь карточки по центру */
     #kvest-chat-box > div,
-    #kvest-chat-box iframe {
+    #kvest-chat-box iframe,
+    [class*="justwidget"],
+    [id*="justwidget"] {
+      position: relative !important;
+      inset: auto !important;
+      top: auto !important;
+      left: auto !important;
+      right: auto !important;
+      bottom: auto !important;
       width: 100% !important;
       height: 100% !important;
+      max-width: 100% !important;
       max-height: 100% !important;
-      position: relative !important;
-      bottom: auto !important;
-      right: auto !important;
+      margin: 0 !important;
       box-shadow: none !important;
       border-radius: 0 !important;
+      transform: none !important;
     }
   </style>
 </head>
@@ -186,7 +195,7 @@
   </main>
 
   <script>
-    // 1. Получаем ID, который сформировала кнопка «Твой ход» (из URL или localStorage)
+    // 1. Получаем постоянный ID пользователя с главной страницы
     const urlParams = new URLSearchParams(window.location.search);
     let userId = urlParams.get('uid') || localStorage.getItem('kvestologia_user_id');
 
@@ -195,52 +204,51 @@
     }
     localStorage.setItem('kvestologia_user_id', userId);
 
-    // 2. Настраиваем виджет Just AI до его загрузки
-    (function() {
-      var savedAttrs = null;
+    const chatBox = document.getElementById('kvest-chat-box');
 
-      Object.defineProperty(window, 'JustWidgetAttributes', {
-        configurable: true,
-        get: function() { return savedAttrs; },
-        set: function(val) {
-          if (val && val.options) {
-            val.options.embedmentContainer = {
-              id: 'kvest-chat-box',
-              enabled: true
-            };
-            val.options.headline = val.options.headline || {};
-            val.options.headline.show = false;
-            val.options.showCloseButton = false;
-
-            // Передаем ID в виджет, чтобы Aimylogic нашел пользователя в Google Таблице
-            val.clientId = userId;
-            val.options.clientId = userId;
+    // 2. Следим за появлением виджета в body и переносим его внутрь центральной карточки
+    const bodyObserver = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        mutation.addedNodes.forEach(function(node) {
+          if (node.nodeType === 1 && node.id !== 'kvest-chat-box') {
+            // Ищем контейнер виджета Just AI, который скрипт добавляет в конец страницы
+            const isWidget = (node.id && node.id.toLowerCase().includes('just')) ||
+                             (node.className && typeof node.className === 'string' && node.className.toLowerCase().includes('just')) ||
+                             node.querySelector('iframe[src*="jaicp"]');
+            if (isWidget && node.parentElement !== chatBox) {
+              chatBox.appendChild(node);
+            }
           }
-          savedAttrs = val;
-        }
+        });
       });
-    })();
+    });
 
-    // 3. Автоматический запуск диалога при открытии страницы после нажатия «Твой ход»
-    function initChatOnEntry() {
-      var checkApi = setInterval(function() {
-        if (window.JustWidgetApi && typeof window.JustWidgetApi.sendText === 'function') {
-          clearInterval(checkApi);
-          sessionStorage.removeItem('kvest_entry_triggered');
-          window.JustWidgetApi.sendText('/start');
+    bodyObserver.observe(document.body, { childList: true });
+
+    // 3. Открываем чат и отправляем /start при загрузке API
+    var startSent = false;
+    var widgetCheck = setInterval(function() {
+      if (window.JustWidgetApi) {
+        if (typeof window.JustWidgetApi.open === 'function') {
+          window.JustWidgetApi.open();
         }
-      }, 300);
 
-      setTimeout(function() { clearInterval(checkApi); }, 10000);
-    }
+        if (!startSent && typeof window.JustWidgetApi.sendText === 'function') {
+          startSent = true;
+          clearInterval(widgetCheck);
+          setTimeout(function() {
+            window.JustWidgetApi.sendText('/start');
+          }, 700);
+        }
+      }
+    }, 300);
 
-    window.addEventListener('load', initChatOnEntry);
+    setTimeout(function() { clearInterval(widgetCheck); }, 12000);
 
-    // 4. Анимация аватара робота при появлении сообщений
+    // 4. Анимация аватара робота
     const avatarRing = document.getElementById('avatarRing');
     const robotAvatar = document.getElementById('robotAvatar');
     const statusText = document.getElementById('statusText');
-    const chatBox = document.getElementById('kvest-chat-box');
     let speakTimer = null;
 
     robotAvatar.addEventListener('loadedmetadata', function() {
@@ -250,7 +258,6 @@
     function triggerRobotSpeak() {
       avatarRing.classList.add('speaking');
       statusText.textContent = 'Говорит...';
-
       try {
         robotAvatar.currentTime = 1.2;
         robotAvatar.play().catch(function() {});
@@ -264,28 +271,23 @@
       }, 2800);
     }
 
-    const observer = new MutationObserver(function(mutations) {
+    const chatObserver = new MutationObserver(function(mutations) {
       let hasNewNodes = false;
       mutations.forEach(function(m) {
-        if (m.addedNodes && m.addedNodes.length > 0) {
-          hasNewNodes = true;
-        }
+        if (m.addedNodes && m.addedNodes.length > 0) hasNewNodes = true;
       });
-      if (hasNewNodes) {
-        triggerRobotSpeak();
-      }
+      if (hasNewNodes) triggerRobotSpeak();
     });
 
-    observer.observe(chatBox, { childList: true, subtree: true });
+    chatObserver.observe(chatBox, { childList: true, subtree: true });
   </script>
 
-  <!-- Подключение самого чат-бота Aimylogic -->
-  <script src="https://bot.jaicp.com/chatwidget/EzGQTMKa:e0ad90bb3a75aee04ef2352161a74420e95edbb9/justwidget.js" async></script>
+  <!-- Скрипт вашего виджета Aimylogic -->
+  <script src="https://jaicp.com" async></script>
 
 </body>
 </html>
 
- 
 
 
 
