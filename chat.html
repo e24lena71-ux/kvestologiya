@@ -66,12 +66,6 @@
       padding: 2px;
       background: #e2e8f0;
       flex-shrink: 0;
-      transition: box-shadow 0.3s ease, background 0.3s ease;
-    }
-
-    .avatar-ring.active {
-      background: linear-gradient(135deg, #3b6e8c, #68b0ab);
-      box-shadow: 0 0 0 4px rgba(59, 110, 140, 0.16);
     }
 
     .avatar-video {
@@ -101,7 +95,7 @@
       background-color: #4caf50;
     }
 
-    /* Контейнер для встраивания чата */
+    /* Контейнер для чата */
     #kvest-chat-box {
       flex: 1;
       width: 100%;
@@ -109,17 +103,34 @@
       position: relative;
       overflow: hidden;
       background: #E6F0EC;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    #kvest-chat-box > div {
+    /* Удерживаем и кнопку, и раскрытое окно чата строго внутри карточки */
+    #kvest-chat-box > div,
+    #kvest-chat-box > div > div {
+      position: relative !important;
+      inset: auto !important;
+      top: auto !important;
+      left: auto !important;
+      right: auto !important;
+      bottom: auto !important;
       width: 100% !important;
       height: 100% !important;
+      max-width: 100% !important;
       max-height: 100% !important;
-      position: relative !important;
-      bottom: auto !important;
-      right: auto !important;
       box-shadow: none !important;
       border-radius: 0 !important;
+    }
+
+    /* Делаем кнопку-робота яркой и заметной, если она отображается до открытия */
+    #kvest-chat-box button[class*="launcher"],
+    #kvest-chat-box > div > button {
+      border: 2px solid #3b6e8c !important;
+      box-shadow: 0 8px 24px rgba(59, 110, 140, 0.28) !important;
+      background-color: #ffffff !important;
     }
   </style>
 </head>
@@ -131,7 +142,7 @@
 
   <main class="chat-card">
     <header class="robot-header">
-      <div id="avatarRing" class="avatar-ring">
+      <div class="avatar-ring">
         <video id="robotAvatar" class="avatar-video" src="1122.mp4" muted playsinline preload="metadata"></video>
       </div>
       <div>
@@ -147,14 +158,13 @@
   </main>
 
   <script>
-    // 1. Ставим аватар на финальный кадр
+    // 1. Статичный кадр робота в шапке
     const robotAvatar = document.getElementById('robotAvatar');
-    const avatarRing = document.getElementById('avatarRing');
     robotAvatar.addEventListener('loadedmetadata', function() {
       robotAvatar.currentTime = Math.max(0, robotAvatar.duration - 0.1);
     });
 
-    // 2. Включаем встраивание в блок #kvest-chat-box
+    // 2. Включаем штатное встраивание в блок #kvest-chat-box
     var _attrs = null;
     Object.defineProperty(window, 'JustWidgetAttributes', {
       configurable: true,
@@ -167,28 +177,20 @@
       }
     });
 
-    // 3. Подключаем скрипт виджета
+    // 3. Подключаем виджет
     var wScript = document.createElement('script');
     wScript.src = 'https://jaicp.com' + 'EzGQTMKa:e0ad90bb3a75aee04ef2352161a74420e95edbb9' + '/justwidget.js';
     wScript.async = true;
     document.body.appendChild(wScript);
 
-    // 4. Один раз раскрываем окно чата вместо круглой кнопки внизу (без нагрузки на страницу)
-    var openAttempts = 0;
-    var openTimer = setInterval(function() {
-      openAttempts++;
+    // 4. Аккуратно раскрываем чат через 1 секунду после полной отрисовки виджета
+    setTimeout(function() {
       var box = document.getElementById('kvest-chat-box');
-      var launchBtn = box ? box.querySelector('button') : null;
-      var hasInput = box ? box.querySelector('textarea, input') : null;
-
-      if (launchBtn && !hasInput) {
-        launchBtn.click();
-        avatarRing.classList.add('active');
-        clearInterval(openTimer);
-      } else if (hasInput || openAttempts > 20) {
-        clearInterval(openTimer);
+      var btn = box ? box.querySelector('button') : null;
+      if (btn) {
+        btn.click();
       }
-    }, 300);
+    }, 1000);
   </script>
 
 </body>
