@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Квестология — твой личный путь</title>
+  <script src="https://jaicp.com" async></script>
   <style>
     :root {
       --bg-color: #f6f7f9;
@@ -50,7 +51,6 @@
       color: var(--accent);
     }
 
-    /* Шапка с роботом по центру экрана */
     .robot-header {
       width: 100%;
       max-width: 480px;
@@ -126,6 +126,12 @@
       display: inline-block;
     }
 
+    .loading-hint {
+      margin-top: 80px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
     /* Ставим штатный виджет Aimylogic по центру экрана прямо под шапку */
     .justwidget {
       position: fixed !important;
@@ -162,12 +168,13 @@
     </div>
   </header>
 
+  <div class="loading-hint">Пространство Квестологии открывается...</div>
+
   <script>
     const avatarRing = document.getElementById('avatarRing');
     const robotAvatar = document.getElementById('robotAvatar');
     const statusText = document.getElementById('statusText');
     let speakTimer = null;
-    let greetingSent = false;
 
     robotAvatar.addEventListener('loadedmetadata', function() {
       robotAvatar.currentTime = Math.max(0, robotAvatar.duration - 0.1);
@@ -190,12 +197,13 @@
       }, 2800);
     }
 
-    // Когда виджет Aimylogic открывается, отправляем ему скрытое слово 'start',
-    // чтобы бот сразу проверил посетителя и поприветствовал его сам
-    const observer = new MutationObserver(function() {
+    // Безопасный запуск без зависаний: ждём появления окна виджета и подаём команду start
+    let attempts = 0;
+    const bootTimer = setInterval(function() {
+      attempts++;
       const iframe = document.querySelector('.justwidget iframe');
-      if (iframe && !greetingSent) {
-        greetingSent = true;
+      if (iframe && iframe.contentWindow) {
+        clearInterval(bootTimer);
         setTimeout(function() {
           try {
             iframe.contentWindow.postMessage(JSON.stringify({
@@ -206,14 +214,11 @@
           triggerRobotSpeak();
         }, 1200);
       }
-      triggerRobotSpeak();
-    });
-
-    observer.observe(document.body, { childList: true, subtree: true });
+      if (attempts > 30) {
+        clearInterval(bootTimer);
+      }
+    }, 300);
   </script>
-
-  <!-- Восстановленная полная ссылка на ваш виджет Aimylogic -->
-  <script src="https://bot.jaicp.com/chatwidget/EzGQTMKa:e0ad90bb3a75aee04ef2352161a74420e95edbb9/justwidget.js" async></script>
 
 </body>
 </html>
