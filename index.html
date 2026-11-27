@@ -196,6 +196,28 @@
       video.play();
       soundBtn.classList.add('hidden');
     });
+        // Привязываем идентификацию к кнопке «Твой ход»
+    ctaButton.addEventListener('click', function(e) {
+      e.preventDefault(); // На мгновение задерживаем переход, чтобы гарантированно записать данные
+
+      // 1. Проверяем или создаем постоянный ID пользователя
+      let userId = localStorage.getItem('kvestologia_user_id');
+      let isNewUser = false;
+
+      if (!userId) {
+        userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
+        localStorage.setItem('kvestologia_user_id', userId);
+        isNewUser = true;
+      }
+
+      // 2. Ставим метку, что пользователь только что нажал «Твой ход»
+      sessionStorage.setItem('kvest_entry_triggered', 'true');
+      sessionStorage.setItem('kvest_is_new', isNewUser ? '1' : '0');
+
+      // 3. Переходим на страницу чата, передавая ID в адресе для надежности
+      window.location.href = 'chat.html?uid=' + encodeURIComponent(userId);
+    });
+
   </script>
 
 </body>
