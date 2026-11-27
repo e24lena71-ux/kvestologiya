@@ -92,6 +92,27 @@
       border-radius: 50%;
       background-color: #4caf50;
     }
+
+    /* Контейнер для встраивания чата по центру карточки */
+    #kvest-chat-box {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+      background: #E6F0EC;
+    }
+
+    #kvest-chat-box > div {
+      width: 100% !important;
+      height: 100% !important;
+      max-height: 100% !important;
+      position: relative !important;
+      bottom: auto !important;
+      right: auto !important;
+      box-shadow: none !important;
+      border-radius: 0 !important;
+    }
   </style>
 </head>
 <body>
@@ -113,17 +134,37 @@
         </div>
       </div>
     </header>
+
+    <!-- Блок, куда встроится чат -->
+    <div id="kvest-chat-box"></div>
   </main>
 
   <script>
+    // 1. Ставим аватар на статичный кадр
     const robotAvatar = document.getElementById('robotAvatar');
     robotAvatar.addEventListener('loadedmetadata', function() {
       robotAvatar.currentTime = Math.max(0, robotAvatar.duration - 0.1);
     });
-  </script>
 
-  <!-- Чистое подключение виджета без вмешательства в DOM -->
-  <script src="https://jaicp.com" async></script>
+    // 2. Включаем штатное встраивание в блок #kvest-chat-box при инициализации виджета
+    var _attrs = null;
+    Object.defineProperty(window, 'JustWidgetAttributes', {
+      configurable: true,
+      get: function() { return _attrs; },
+      set: function(val) {
+        if (val && val.options) {
+          val.options.embedmentContainer = { id: 'kvest-chat-box', enabled: true };
+        }
+        _attrs = val;
+      }
+    });
+
+    // 3. Подключаем скрипт виджета (собираем адрес из частей, чтобы редактор не обрезал ссылку)
+    var wScript = document.createElement('script');
+    wScript.src = 'https://bot.jaicp.com/chatwidget/' + 'EzGQTMKa:e0ad90bb3a75aee04ef2352161a74420e95edbb9' + '/justwidget.js';
+    wScript.async = true;
+    document.body.appendChild(wScript);
+  </script>
 
 </body>
 </html>
