@@ -380,7 +380,7 @@
     </footer>
   </div>
 
-    <script>
+      <script>
     const video = document.getElementById('introVideo');
     const robotAvatar = document.getElementById('robotAvatar');
     const soundBtn = document.getElementById('soundBtn');
@@ -389,9 +389,8 @@
     const chatModal = document.getElementById('chatModal');
     const closeModalBtn = document.getElementById('closeModalBtn');
     let stepStarted = false;
-    let widgetLoaded = false;
 
-    // Статичный кадр робота в шапке
+    // 1. Статичный кадр робота в шапке
     robotAvatar.addEventListener('loadedmetadata', function() {
       robotAvatar.currentTime = Math.max(0, robotAvatar.duration - 0.1);
     });
@@ -417,49 +416,71 @@
       soundBtn.classList.add('hidden');
     });
 
-    // Открытие окна и загрузка чата по клику на «Твой ход»
+    // 2. Встраиваем виджет сразу при загрузке страницы (в фоновом режиме)
+    var _attrs = null;
+    Object.defineProperty(window, 'JustWidgetAttributes', {
+      configurable: true,
+      get: function() { return _attrs; },
+      set: function(val) {
+        if (val && val.options) {
+          val.options.embedmentContainer = { id: 'kvest-chat-box', enabled: true };
+          // Скрываем лишнюю внутреннюю шапку виджета с белым крестиком
+          val.options.headline = val.options.headline || {};
+          val.options.headline.show = false;
+          val.options.showCloseButton = false;
+        }
+        _attrs = val;
+      }
+    });
+
+    var host = ['https:/', '/bot.', 'jaicp.', 'com/chatwidget/'].join('');
+    var token = 'EzGQTMKa:e0ad90bb3a75aee04ef2352161a74420e95edbb9';
+    var wScript = document.createElement('script');
+    wScript.src = host + token + '/justwidget.js';
+    wScript.async = true;
+    document.body.appendChild(wScript);
+
+    // Функция принудительного раскрытия чата (пробивает Shadow DOM и API)
+    function forceOpenChat() {
+      if (window.JustWidgetApi && typeof window.JustWidgetApi.open === 'function') {
+        window.JustWidgetApi.open();
+      }
+      var box = document.getElementById('kvest-chat-box');
+      if (!box) return false;
+
+      // Ищем кнопку-робота в обычном DOM и внутри Shadow DOM
+      var allEls = box.querySelectorAll('*');
+      for (var i = 0; i < allEls.length; i++) {
+        var el = allEls[i];
+        if (el.tagName === 'BUTTON' && !box.querySelector('textarea, input')) {
+          el.click();
+          return true;
+        }
+        if (el.shadowRoot) {
+          var sBtn = el.shadowRoot.querySelector('button');
+          var sInput = el.shadowRoot.querySelector('textarea, input');
+          if (sBtn && !sInput) {
+            sBtn.click();
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    // Автоматически раскрываем чат в фоне, пока пользователь смотрит видео
+    var bgOpenAttempts = 0;
+    var bgOpenTimer = setInterval(function() {
+      bgOpenAttempts++;
+      if (forceOpenChat() || bgOpenAttempts > 30) {
+        clearInterval(bgOpenTimer);
+      }
+    }, 300);
+
+    // 3. По клику на «Твой ход» показываем уже открытый чат
     ctaButton.addEventListener('click', function() {
       chatModal.classList.add('open');
-
-      if (!widgetLoaded) {
-        widgetLoaded = true;
-
-        var _attrs = null;
-        Object.defineProperty(window, 'JustWidgetAttributes', {
-          configurable: true,
-          get: function() { return _attrs; },
-          set: function(val) {
-            if (val && val.options) {
-              val.options.embedmentContainer = { id: 'kvest-chat-box', enabled: true };
-            }
-            _attrs = val;
-          }
-        });
-
-        // Защищённая сборка адреса виджета
-        var host = ['https:/', '/bot.', 'jaicp.', 'com/chatwidget/'].join('');
-        var token = 'EzGQTMKa:e0ad90bb3a75aee04ef2352161a74420e95edbb9';
-        var wScript = document.createElement('script');
-        wScript.src = host + token + '/justwidget.js';
-        wScript.async = true;
-        document.body.appendChild(wScript);
-
-        // Автоматически нажимаем кнопку-робота сразу после её появления, чтобы чат открылся сам
-        var tries = 0;
-        var autoClickTimer = setInterval(function() {
-          tries++;
-          var box = document.getElementById('kvest-chat-box');
-          var launchBtn = box ? box.querySelector('button') : null;
-          var hasInput = box ? box.querySelector('textarea, input') : null;
-
-          if (launchBtn && !hasInput) {
-            launchBtn.click();
-            clearInterval(autoClickTimer);
-          } else if (hasInput || tries > 30) {
-            clearInterval(autoClickTimer);
-          }
-        }, 250);
-      }
+      forceOpenChat();
     });
 
     // Закрытие окна по крестику
