@@ -15,14 +15,15 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      padding: 24px 16px;
+      justify-content: space-between;
+      padding: 24px 16px 16px;
       text-align: center;
     }
 
     .container {
       max-width: 720px;
       width: 100%;
+      margin: auto 0;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -51,15 +52,17 @@
       position: absolute;
       bottom: 14px;
       right: 14px;
-      background: rgba(20, 20, 20, 0.78);
+      background: rgba(20, 20, 20, 0.82);
       color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      padding: 8px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      padding: 8px 16px;
       border-radius: 20px;
       font-size: 0.85rem;
       cursor: pointer;
+      transition: background 0.2s ease, opacity 0.3s ease;
     }
 
+    .sound-btn:hover { background: rgba(20, 20, 20, 0.95); }
     .sound-btn.hidden { opacity: 0; pointer-events: none; }
 
     .reveal-block {
@@ -87,13 +90,12 @@
       display: inline-block;
       background-color: #3b6e8c;
       color: #ffffff;
-      border: none;
+      text-decoration: none;
       font-size: 1.05rem;
       font-weight: 500;
       padding: 14px 36px;
       border-radius: 30px;
       box-shadow: 0 6px 18px rgba(59, 110, 140, 0.25);
-      cursor: pointer;
       opacity: 0;
       visibility: hidden;
       transform: translateY(10px);
@@ -103,218 +105,24 @@
     .cta-button.show { opacity: 1; visibility: visible; transform: translateY(0); }
     .cta-button:hover { background-color: #2d556d; transform: translateY(-2px); }
 
-    /* Подложка всплывающего окна */
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: #eef1f4;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 16px 14px;
-      z-index: 9999;
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-      overflow-y: auto;
-      transition: opacity 0.35s ease, visibility 0.35s ease;
-    }
-
-    .modal-backdrop.open {
-      opacity: 1;
-      visibility: visible;
-      pointer-events: auto;
-    }
-
-    /* Рабочая зона: левый блок + чат по центру + правый блок */
-    .workspace-grid {
-      width: 100%;
-      max-width: 1200px;
-      margin: auto 0;
-      display: flex;
-      align-items: stretch;
-      justify-content: center;
-      gap: 24px;
-    }
-
-    /* Боковые карточки для вашей будущей информации */
-    .side-panel {
-      flex: 1;
-      max-width: 280px;
-      background: #ffffff;
-      border-radius: 22px;
-      padding: 22px 20px;
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.05);
-      border: 1px solid rgba(0, 0, 0, 0.06);
-      text-align: left;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .side-panel h3 {
-      font-size: 1rem;
-      font-weight: 600;
-      color: #22262a;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-      padding-bottom: 10px;
-    }
-
-    .side-panel p {
-      font-size: 0.9rem;
-      line-height: 1.5;
-      color: #5a626a;
-    }
-
-    .side-link {
-      display: inline-block;
-      color: #3b6e8c;
-      text-decoration: none;
-      font-size: 0.9rem;
-      font-weight: 500;
-      padding: 8px 12px;
-      background: #f2f6f9;
-      border-radius: 10px;
-      transition: background 0.2s ease;
-    }
-
-    .side-link:hover { background: #e3edf4; }
-
-    /* Центральная карточка чата */
-    .modal-card {
-      width: 100%;
-      max-width: 560px;
-      height: 78vh;
-      max-height: 740px;
-      min-height: 520px;
-      background: #ffffff;
-      border-radius: 24px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
-      border: 1px solid rgba(0, 0, 0, 0.06);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      flex-shrink: 0;
-    }
-
-    .modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 22px;
-      background: #ffffff;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.07);
-      flex-shrink: 0;
-    }
-
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      text-align: left;
-    }
-
-    .avatar-ring {
-      width: 46px;
-      height: 46px;
-      border-radius: 50%;
-      padding: 2px;
-      background: linear-gradient(135deg, #3b6e8c, #7eb09b);
-      flex-shrink: 0;
-    }
-
-    .avatar-video {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      object-fit: cover;
-      display: block;
-      background: #111;
-    }
-
-    .modal-title { font-size: 1.05rem; font-weight: 600; color: #22262a; }
-
-    .modal-subtitle {
-      font-size: 0.8rem;
-      color: #6c757d;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 2px;
-    }
-
-    .status-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background-color: #4caf50;
-    }
-
-    .close-modal-btn {
-      background: #f3f5f7;
-      border: none;
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      font-size: 1.05rem;
-      color: #5a626a;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .close-modal-btn:hover { background: #e2e6ea; color: #22262a; }
-
-    #kvest-chat-box {
-      flex: 1;
-      width: 100%;
-      height: 100%;
-      position: relative;
-      overflow: hidden;
-      background: #E6F0EC;
-    }
-
-    #kvest-chat-box > div {
-      width: 100% !important;
-      height: 100% !important;
-      max-height: 100% !important;
-      position: relative !important;
-      bottom: auto !important;
-      right: auto !important;
-      box-shadow: none !important;
-      border-radius: 0 !important;
-    }
-
-    /* Нижний блок с дисклеймером и офертой */
     .legal-footer {
       width: 100%;
-      max-width: 820px;
-      margin-top: 14px;
-      padding: 8px 12px;
+      max-width: 720px;
+      margin-top: 24px;
+      padding-top: 12px;
       font-size: 0.78rem;
       line-height: 1.45;
       color: #6c757d;
-      text-align: center;
     }
 
     .legal-footer a {
       color: #3b6e8c;
       text-decoration: underline;
     }
-
-    /* Адаптация для телефонов и планшетов */
-    @media (max-width: 1024px) {
-      .workspace-grid { flex-direction: column; align-items: center; }
-      .side-panel { max-width: 560px; width: 100%; }
-      .modal-card { height: 74vh; }
-    }
   </style>
 </head>
 <body>
 
-  <!-- ГЛАВНЫЙ ЭКРАН -->
   <main class="container">
     <h1 class="top-tagline">
       Квестология — мягкая интерактивная психология в формате личного пути
@@ -329,71 +137,25 @@
       <p id="bottomText" class="bottom-text">
         Когда жизнь застревает на одном уровне, психология становится инструментом перехода на следующий
       </p>
-      <button id="ctaButton" class="cta-button" type="button">Твой ход</button>
+      <a id="ctaButton" href="#" class="cta-button">Твой ход</a>
     </div>
   </main>
 
-  <!-- ВСПЛЫВАЮЩЕЕ ОКНО С БОКОВЫМИ БЛОКАМИ И ЧАТОМ -->
-  <div id="chatModal" class="modal-backdrop">
-    <div class="workspace-grid">
+  <footer class="legal-footer">
+    Сервис «Квестология» является информационно-образовательным тренажёром и не заменяет профессиональную медицинскую, психиатрическую или психотерапевтическую помощь. Продолжая диалог, вы принимаете условия <a href="#oferta" onclick="alert('Здесь откроется текст вашей оферты'); return false;">Пользовательского соглашения и Оферты</a>.
+  </footer>
 
-      <!-- ЛЕВЫЙ БЛОК (сюда потом добавите свой текст или картинку) -->
-      <aside class="side-panel">
-        <h3>Как проходит путь</h3>
-        <p>Здесь вы можете разместить краткую инструкцию по шагам квеста, подсказки или вдохновляющую иллюстрацию.</p>
-        <p>Отвечайте в комфортном темпе — проводник подстроится под ваш запрос.</p>
-      </aside>
-
-      <!-- ЦЕНТРАЛЬНЫЙ БЛОК С ЧАТОМ -->
-      <div class="modal-card">
-        <header class="modal-header">
-          <div class="header-left">
-            <div class="avatar-ring">
-              <video id="robotAvatar" class="avatar-video" src="1122.mp4" muted playsinline preload="metadata"></video>
-            </div>
-            <div>
-              <div class="modal-title">Квестология</div>
-              <div class="modal-subtitle">
-                <span class="status-dot"></span>
-                <span>Проводник на связи</span>
-              </div>
-            </div>
-          </div>
-          <button id="closeModalBtn" class="close-modal-btn" type="button" title="Вернуться на главную">✕</button>
-        </header>
-
-        <div id="kvest-chat-box"></div>
-      </div>
-
-      <!-- ПРАВЫЙ БЛОК (сюда потом добавите ссылки или материалы) -->
-      <aside class="side-panel">
-        <h3>Полезные материалы</h3>
-        <p>Место для дополнительных материалов, заметок или навигации по разделам.</p>
-        <a href="#oferta" class="side-link" onclick="alert('Здесь откроется текст вашей оферты'); return false;">📄 Договор оферты</a>
-      </aside>
-
-    </div>
-
-      <!-- НИЖНИЙ БЛОК С ПРЕДУПРЕЖДЕНИЕМ И ОФЕРТОЙ -->
-    <footer class="legal-footer">
-      Сервис «Квестология» является информационно-образовательным тренажёром и не заменяет профессиональную медицинскую, психиатрическую или психотерапевтическую помощь. Продолжая диалог, вы принимаете условия <a href="#oferta" onclick="alert('Здесь откроется текст вашей оферты'); return false;">Пользовательского соглашения и Оферты</a>.
-    </footer>
-  </div>
-
-      <script>
+  <script>
     const video = document.getElementById('introVideo');
-    const robotAvatar = document.getElementById('robotAvatar');
     const soundBtn = document.getElementById('soundBtn');
     const bottomText = document.getElementById('bottomText');
     const ctaButton = document.getElementById('ctaButton');
-    const chatModal = document.getElementById('chatModal');
-    const closeModalBtn = document.getElementById('closeModalBtn');
     let stepStarted = false;
 
-    // 1. Статичный кадр робота в шапке
-    robotAvatar.addEventListener('loadedmetadata', function() {
-      robotAvatar.currentTime = Math.max(0, robotAvatar.duration - 0.1);
-    });
+    // Защищённая установка прямой ссылки на чат для кнопки «Твой ход»
+    const host = ['https:/', '/bot.', 'jaicp.', 'com/chatwidget/'].join('');
+    const token = 'EzGQTMKa:e0ad90bb3a75aee04ef2352161a74420e95edbb9';
+    ctaButton.href = host + token + '/index.html';
 
     function startSequence() {
       if (stepStarted) return;
@@ -415,83 +177,10 @@
       video.play();
       soundBtn.classList.add('hidden');
     });
-
-    // 2. Встраиваем виджет сразу при загрузке страницы (в фоновом режиме)
-    var _attrs = null;
-    Object.defineProperty(window, 'JustWidgetAttributes', {
-      configurable: true,
-      get: function() { return _attrs; },
-      set: function(val) {
-        if (val && val.options) {
-          val.options.embedmentContainer = { id: 'kvest-chat-box', enabled: true };
-          // Скрываем лишнюю внутреннюю шапку виджета с белым крестиком
-          val.options.headline = val.options.headline || {};
-          val.options.headline.show = false;
-          val.options.showCloseButton = false;
-        }
-        _attrs = val;
-      }
-    });
-
-    var host = ['https:/', '/bot.', 'jaicp.', 'com/chatwidget/'].join('');
-    var token = 'EzGQTMKa:e0ad90bb3a75aee04ef2352161a74420e95edbb9';
-    var wScript = document.createElement('script');
-    wScript.src = host + token + '/justwidget.js';
-    wScript.async = true;
-    document.body.appendChild(wScript);
-
-    // Функция принудительного раскрытия чата (пробивает Shadow DOM и API)
-    function forceOpenChat() {
-      if (window.JustWidgetApi && typeof window.JustWidgetApi.open === 'function') {
-        window.JustWidgetApi.open();
-      }
-      var box = document.getElementById('kvest-chat-box');
-      if (!box) return false;
-
-      // Ищем кнопку-робота в обычном DOM и внутри Shadow DOM
-      var allEls = box.querySelectorAll('*');
-      for (var i = 0; i < allEls.length; i++) {
-        var el = allEls[i];
-        if (el.tagName === 'BUTTON' && !box.querySelector('textarea, input')) {
-          el.click();
-          return true;
-        }
-        if (el.shadowRoot) {
-          var sBtn = el.shadowRoot.querySelector('button');
-          var sInput = el.shadowRoot.querySelector('textarea, input');
-          if (sBtn && !sInput) {
-            sBtn.click();
-            return true;
-          }
-        }
-      }
-      return false;
-    }
-
-    // Автоматически раскрываем чат в фоне, пока пользователь смотрит видео
-    var bgOpenAttempts = 0;
-    var bgOpenTimer = setInterval(function() {
-      bgOpenAttempts++;
-      if (forceOpenChat() || bgOpenAttempts > 30) {
-        clearInterval(bgOpenTimer);
-      }
-    }, 300);
-
-    // 3. По клику на «Твой ход» показываем уже открытый чат
-    ctaButton.addEventListener('click', function() {
-      chatModal.classList.add('open');
-      forceOpenChat();
-    });
-
-    // Закрытие окна по крестику
-    closeModalBtn.addEventListener('click', function() {
-      chatModal.classList.remove('open');
-    });
   </script>
 
 </body>
 </html>
-
 
 
 
