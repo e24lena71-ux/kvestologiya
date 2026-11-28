@@ -83,7 +83,6 @@
 
     .bottom-text.show { opacity: 1; visibility: visible; transform: translateY(0); }
 
-    /* Обычная, надёжная кнопка «Твой ход» */
     .cta-button {
       display: inline-block;
       background-color: #3b6e8c;
@@ -104,12 +103,11 @@
     .cta-button.show { opacity: 1; visibility: visible; transform: translateY(0); }
     .cta-button:hover { background-color: #2d556d; transform: translateY(-2px); }
 
-    /* Всплывающее окно (модальный слой) — изначально скрыто, но виджет внутри уже загружается */
+    /* Плотный фон всплывающего окна — полностью перекрывает картинку и текст на главной */
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(18, 22, 26, 0.55);
-      backdrop-filter: blur(4px);
+      background: #eef1f4; /* Плотный спокойный фон в тон сайта, ничего не просвечивает */
       display: flex;
       align-items: center;
       justify-content: center;
@@ -118,7 +116,7 @@
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
-      transition: opacity 0.3s ease, visibility 0.3s ease;
+      transition: opacity 0.35s ease, visibility 0.35s ease;
     }
 
     .modal-backdrop.open {
@@ -127,60 +125,93 @@
       pointer-events: auto;
     }
 
+    /* Просторная карточка чата (560px — по ширине блока с видео) */
     .modal-card {
       width: 100%;
-      max-width: 400px;
-      height: 82vh;
-      max-height: 740px;
-      min-height: 520px;
+      max-width: 560px;
+      height: 86vh;
+      max-height: 780px;
+      min-height: 540px;
       background: #ffffff;
-      border-radius: 22px;
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+      border-radius: 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(0, 0, 0, 0.06);
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      transform: translateY(16px) scale(0.98);
-      transition: transform 0.3s ease;
+      transform: translateY(14px) scale(0.98);
+      transition: transform 0.35s ease;
     }
 
     .modal-backdrop.open .modal-card {
       transform: translateY(0) scale(1);
     }
 
-    /* Простая шапка всплывающего окна с кнопкой закрытия */
+    /* Красивая шапка с аватаром робота и кнопкой закрытия */
     .modal-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 14px 20px;
+      padding: 14px 22px;
       background: #ffffff;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.07);
       flex-shrink: 0;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+    }
+
+    .avatar-ring {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      padding: 2px;
+      background: linear-gradient(135deg, #3b6e8c, #7eb09b);
+      flex-shrink: 0;
+    }
+
+    .avatar-video {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+      background: #111;
     }
 
     .modal-title {
       font-size: 1.05rem;
       font-weight: 600;
       color: #22262a;
+    }
+
+    .modal-subtitle {
+      font-size: 0.8rem;
+      color: #6c757d;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
+      margin-top: 2px;
     }
 
     .status-dot {
-      width: 8px;
-      height: 8px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
       background-color: #4caf50;
     }
 
     .close-modal-btn {
-      background: #f1f3f5;
+      background: #f3f5f7;
       border: none;
-      width: 32px;
-      height: 32px;
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       color: #5a626a;
       cursor: pointer;
       display: flex;
@@ -194,7 +225,7 @@
       color: #22262a;
     }
 
-    /* Контейнер для чата внутри модального окна */
+    /* Область переписки */
     #kvest-chat-box {
       flex: 1;
       width: 100%;
@@ -240,11 +271,19 @@
   <div id="chatModal" class="modal-backdrop">
     <div class="modal-card">
       <header class="modal-header">
-        <div class="modal-title">
-          <span class="status-dot"></span>
-          <span>Квестология</span>
+        <div class="header-left">
+          <div class="avatar-ring">
+            <video id="robotAvatar" class="avatar-video" src="1122.mp4" muted playsinline preload="metadata"></video>
+          </div>
+          <div>
+            <div class="modal-title">Квестология</div>
+            <div class="modal-subtitle">
+              <span class="status-dot"></span>
+              <span>Проводник на связи</span>
+            </div>
+          </div>
         </div>
-        <button id="closeModalBtn" class="close-modal-btn" type="button" title="Закрыть чат">✕</button>
+        <button id="closeModalBtn" class="close-modal-btn" type="button" title="Вернуться на главную">✕</button>
       </header>
 
       <div id="kvest-chat-box"></div>
@@ -253,12 +292,18 @@
 
   <script>
     const video = document.getElementById('introVideo');
+    const robotAvatar = document.getElementById('robotAvatar');
     const soundBtn = document.getElementById('soundBtn');
     const bottomText = document.getElementById('bottomText');
     const ctaButton = document.getElementById('ctaButton');
     const chatModal = document.getElementById('chatModal');
     const closeModalBtn = document.getElementById('closeModalBtn');
     let stepStarted = false;
+
+    // Ставим мини-аватар в шапке на статичный финальный кадр
+    robotAvatar.addEventListener('loadedmetadata', function() {
+      robotAvatar.currentTime = Math.max(0, robotAvatar.duration - 0.1);
+    });
 
     function startSequence() {
       if (stepStarted) return;
@@ -284,21 +329,14 @@
     // Открытие всплывающего окна по кнопке «Твой ход»
     ctaButton.addEventListener('click', function() {
       chatModal.classList.add('open');
-      // Пробуем автоматически раскрыть внутреннее окно виджета, если оно свёрнуто
       if (window.JustWidgetApi && typeof window.JustWidgetApi.open === 'function') {
         window.JustWidgetApi.open();
       }
     });
 
-    // Закрытие по крестику или клику мимо карточки
+    // Закрытие по крестику
     closeModalBtn.addEventListener('click', function() {
       chatModal.classList.remove('open');
-    });
-
-    chatModal.addEventListener('click', function(e) {
-      if (e.target === chatModal) {
-        chatModal.classList.remove('open');
-      }
     });
 
     // Встраиваем виджет Aimylogic внутрь всплывающего окна
@@ -322,6 +360,7 @@
 
 </body>
 </html>
+
 
 
 
