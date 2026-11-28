@@ -68,7 +68,6 @@
       align-items: center;
       gap: 20px;
       min-height: 120px;
-      position: relative;
     }
 
     .bottom-text {
@@ -84,14 +83,12 @@
 
     .bottom-text.show { opacity: 1; visibility: visible; transform: translateY(0); }
 
-    /* Ваша кнопка «Твой ход» (БЕЗ overflow: hidden) */
-    .cta-wrapper {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+    /* Обычная, надёжная кнопка «Твой ход» */
+    .cta-button {
+      display: inline-block;
       background-color: #3b6e8c;
       color: #ffffff;
+      border: none;
       font-size: 1.05rem;
       font-weight: 500;
       padding: 14px 36px;
@@ -104,59 +101,118 @@
       transition: opacity 0.9s ease, transform 0.9s ease, background-color 0.25s ease;
     }
 
-    .cta-wrapper.show {
+    .cta-button.show { opacity: 1; visibility: visible; transform: translateY(0); }
+    .cta-button:hover { background-color: #2d556d; transform: translateY(-2px); }
+
+    /* Всплывающее окно (модальный слой) — изначально скрыто, но виджет внутри уже загружается */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(18, 22, 26, 0.55);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 9999;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .modal-backdrop.open {
       opacity: 1;
       visibility: visible;
-      transform: translateY(0);
+      pointer-events: auto;
     }
 
-    .cta-wrapper:hover {
-      background-color: #2d556d;
-      transform: translateY(-2px);
-    }
-
-    /* Прозрачный контейнер виджета поверх кнопки */
-    #kvest-trigger-box {
-      position: absolute;
-      inset: 0;
+    .modal-card {
       width: 100%;
-      height: 100%;
-      opacity: 0;
-      z-index: 20;
-    }
-
-    /* Растягиваем кнопку-робота на всю площадь «Твой ход» */
-    #kvest-trigger-box > div,
-    #kvest-trigger-box button {
-      width: 100% !important;
-      height: 100% !important;
-      min-width: 100% !important;
-      min-height: 100% !important;
-      position: absolute !important;
-      inset: 0 !important;
-      border-radius: 30px !important;
-      cursor: pointer !important;
-    }
-
-    /* Когда чат открыт — показываем его по центру поверх страницы */
-    body.chat-opened #kvest-trigger-box {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 390px;
-      max-width: 94vw;
+      max-width: 400px;
       height: 82vh;
       max-height: 740px;
-      opacity: 1;
-      z-index: 9999;
-      border-radius: 20px;
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+      min-height: 520px;
+      background: #ffffff;
+      border-radius: 22px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+      display: flex;
+      flex-direction: column;
       overflow: hidden;
+      transform: translateY(16px) scale(0.98);
+      transition: transform 0.3s ease;
     }
 
-    body.chat-opened #kvest-trigger-box > div {
-      border-radius: 20px !important;
+    .modal-backdrop.open .modal-card {
+      transform: translateY(0) scale(1);
+    }
+
+    /* Простая шапка всплывающего окна с кнопкой закрытия */
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      background: #ffffff;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      flex-shrink: 0;
+    }
+
+    .modal-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #22262a;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #4caf50;
+    }
+
+    .close-modal-btn {
+      background: #f1f3f5;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      color: #5a626a;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .close-modal-btn:hover {
+      background: #e2e6ea;
+      color: #22262a;
+    }
+
+    /* Контейнер для чата внутри модального окна */
+    #kvest-chat-box {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+      background: #E6F0EC;
+    }
+
+    #kvest-chat-box > div {
+      width: 100% !important;
+      height: 100% !important;
+      max-height: 100% !important;
+      position: relative !important;
+      bottom: auto !important;
+      right: auto !important;
+      box-shadow: none !important;
+      border-radius: 0 !important;
     }
   </style>
 </head>
@@ -176,21 +232,32 @@
       <p id="bottomText" class="bottom-text">
         Когда жизнь застревает на одном уровне, психология становится инструментом перехода на следующий
       </p>
-
-      <!-- Кнопка «Твой ход» с прозрачной кнопкой виджета внутри -->
-      <div id="ctaButton" class="cta-wrapper">
-        <span>Твой ход</span>
-        <div id="kvest-trigger-box"></div>
-      </div>
+      <button id="ctaButton" class="cta-button" type="button">Твой ход</button>
     </div>
   </main>
+
+  <!-- Всплывающее окно с чатом -->
+  <div id="chatModal" class="modal-backdrop">
+    <div class="modal-card">
+      <header class="modal-header">
+        <div class="modal-title">
+          <span class="status-dot"></span>
+          <span>Квестология</span>
+        </div>
+        <button id="closeModalBtn" class="close-modal-btn" type="button" title="Закрыть чат">✕</button>
+      </header>
+
+      <div id="kvest-chat-box"></div>
+    </div>
+  </div>
 
   <script>
     const video = document.getElementById('introVideo');
     const soundBtn = document.getElementById('soundBtn');
     const bottomText = document.getElementById('bottomText');
     const ctaButton = document.getElementById('ctaButton');
-    const triggerBox = document.getElementById('kvest-trigger-box');
+    const chatModal = document.getElementById('chatModal');
+    const closeModalBtn = document.getElementById('closeModalBtn');
     let stepStarted = false;
 
     function startSequence() {
@@ -214,35 +281,48 @@
       soundBtn.classList.add('hidden');
     });
 
-    // 1. Встраиваем виджет прямо внутрь прозрачного блока кнопки «Твой ход»
+    // Открытие всплывающего окна по кнопке «Твой ход»
+    ctaButton.addEventListener('click', function() {
+      chatModal.classList.add('open');
+      // Пробуем автоматически раскрыть внутреннее окно виджета, если оно свёрнуто
+      if (window.JustWidgetApi && typeof window.JustWidgetApi.open === 'function') {
+        window.JustWidgetApi.open();
+      }
+    });
+
+    // Закрытие по крестику или клику мимо карточки
+    closeModalBtn.addEventListener('click', function() {
+      chatModal.classList.remove('open');
+    });
+
+    chatModal.addEventListener('click', function(e) {
+      if (e.target === chatModal) {
+        chatModal.classList.remove('open');
+      }
+    });
+
+    // Встраиваем виджет Aimylogic внутрь всплывающего окна
     var _attrs = null;
     Object.defineProperty(window, 'JustWidgetAttributes', {
       configurable: true,
       get: function() { return _attrs; },
       set: function(val) {
         if (val && val.options) {
-          val.options.embedmentContainer = { id: 'kvest-trigger-box', enabled: true };
+          val.options.embedmentContainer = { id: 'kvest-chat-box', enabled: true };
         }
         _attrs = val;
       }
     });
 
-    // 2. Подключаем скрипт виджета
     var wScript = document.createElement('script');
     wScript.src = 'https://jaicp.com' + 'EzGQTMKa:e0ad90bb3a75aee04ef2352161a74420e95edbb9' + '/justwidget.js';
     wScript.async = true;
     document.body.appendChild(wScript);
-
-    // 3. При нажатии на кнопку раскрываем виджет по центру экрана
-    triggerBox.addEventListener('click', function() {
-      setTimeout(function() {
-        document.body.classList.add('chat-opened');
-      }, 150);
-    });
   </script>
 
 </body>
 </html>
+
 
 
 
