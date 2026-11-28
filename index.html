@@ -374,66 +374,86 @@
 
     </div>
 
-    <!-- НИЖНИЙ БЛОК С ПРЕДУПРЕЖДЕНИЕМ И ОФЕРТОЙ -->
+      <!-- НИЖНИЙ БЛОК С ПРЕДУПРЕЖДЕНИЕМ И ОФЕРТОЙ -->
     <footer class="legal-footer">
-Сервис «Квестология» является информационно-образовательным тренажёром и не заменяет профессиональную медицинскую, психиатрическую или психотерапевтическую помощь. Продолжая диалог, вы принимаете условия Пользовательского соглашения и Оферты.
+      Сервис «Квестология» является информационно-образовательным тренажёром и не заменяет профессиональную медицинскую, психиатрическую или психотерапевтическую помощь. Продолжая диалог, вы принимаете условия <a href="#oferta" onclick="alert('Здесь откроется текст вашей оферты'); return false;">Пользовательского соглашения и Оферты</a>.
+    </footer>
+  </div>
 
-const video = document.getElementById('introVideo');
-const robotAvatar = document.getElementById('robotAvatar');
-const soundBtn = document.getElementById('soundBtn');
-const bottomText = document.getElementById('bottomText');
-const ctaButton = document.getElementById('ctaButton');
-const chatModal = document.getElementById('chatModal');
-const closeModalBtn = document.getElementById('closeModalBtn');
-let stepStarted = false;
-let widgetLoaded = false;
-// Статичный кадр робота в шапке
-robotAvatar.addEventListener('loadedmetadata', function() {
-robotAvatar.currentTime = Math.max(0, robotAvatar.duration - 0.1);
-});
-function startSequence() {
-if (stepStarted) return;
-stepStarted = true;
-bottomText.classList.add('show');
-setTimeout(() => ctaButton.classList.add('show'), 2000);
-}
-video.addEventListener('ended', function() {
-soundBtn.classList.add('hidden');
-startSequence();
-});
-video.addEventListener('error', startSequence);
-soundBtn.addEventListener('click', function() {
-video.muted = false;
-video.currentTime = 0;
-video.play();
-soundBtn.classList.add('hidden');
-});
-// Открытие окна и загрузка чата по клику на «Твой ход»
-ctaButton.addEventListener('click', function() {
-chatModal.classList.add('open');
-if (!widgetLoaded) {
-widgetLoaded = true;
-var _attrs = null;
-Object.defineProperty(window, 'JustWidgetAttributes', {
-configurable: true,
-get: function() { return _attrs; },
-set: function(val) {
-if (val && val.options) {
-val.options.embedmentContainer = { id: 'kvest-chat-box', enabled: true };
-}
-_attrs = val;
-}
-});
-var wScript = document.createElement('script');
-wScript.src = 'jaicp.com' + 'EzGQTMKa:e0ad90bb3a75aee04ef2352161a74420e95edbb9' + '/justwidget.js';
-wScript.async = true;
-document.body.appendChild(wScript);
-}
-});
-// Закрытие окна по крестику
-closeModalBtn.addEventListener('click', function() {
-chatModal.classList.remove('open');
-});
+  <script>
+    const video = document.getElementById('introVideo');
+    const robotAvatar = document.getElementById('robotAvatar');
+    const soundBtn = document.getElementById('soundBtn');
+    const bottomText = document.getElementById('bottomText');
+    const ctaButton = document.getElementById('ctaButton');
+    const chatModal = document.getElementById('chatModal');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    let stepStarted = false;
+    let widgetLoaded = false;
+
+    robotAvatar.addEventListener('loadedmetadata', function() {
+      robotAvatar.currentTime = Math.max(0, robotAvatar.duration - 0.1);
+    });
+
+    function startSequence() {
+      if (stepStarted) return;
+      stepStarted = true;
+      bottomText.classList.add('show');
+      setTimeout(() => ctaButton.classList.add('show'), 2000);
+    }
+
+    video.addEventListener('ended', function() {
+      soundBtn.classList.add('hidden');
+      startSequence();
+    });
+
+    video.addEventListener('error', startSequence);
+
+    soundBtn.addEventListener('click', function() {
+      video.muted = false;
+      video.currentTime = 0;
+      video.play();
+      soundBtn.classList.add('hidden');
+    });
+
+    // Открытие окна и загрузка чата по клику на «Твой ход»
+    ctaButton.addEventListener('click', function() {
+      chatModal.classList.add('open');
+
+      if (!widgetLoaded) {
+        widgetLoaded = true;
+
+        var _attrs = null;
+        Object.defineProperty(window, 'JustWidgetAttributes', {
+          configurable: true,
+          get: function() { return _attrs; },
+          set: function(val) {
+            if (val && val.options) {
+              val.options.embedmentContainer = { id: 'kvest-chat-box', enabled: true };
+            }
+            _attrs = val;
+          }
+        });
+
+        // Защищённая сборка адреса виджета, чтобы редактор его не обрезал
+        var host = ['https:/', '/bot.', 'jaicp.', 'com/chatwidget/'].join('');
+        var token = 'EzGQTMKa:e0ad90bb3a75aee04ef2352161a74420e95edbb9';
+        var wScript = document.createElement('script');
+        wScript.src = host + token + '/justwidget.js';
+        wScript.async = true;
+        document.body.appendChild(wScript);
+      }
+    });
+
+    // Закрытие окна по крестику
+    closeModalBtn.addEventListener('click', function() {
+      chatModal.classList.remove('open');
+    });
+  </script>
+
+</body>
+</html>
+
 
 
 
