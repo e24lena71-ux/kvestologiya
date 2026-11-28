@@ -380,7 +380,7 @@
     </footer>
   </div>
 
-  <script>
+    <script>
     const video = document.getElementById('introVideo');
     const robotAvatar = document.getElementById('robotAvatar');
     const soundBtn = document.getElementById('soundBtn');
@@ -391,6 +391,7 @@
     let stepStarted = false;
     let widgetLoaded = false;
 
+    // Статичный кадр робота в шапке
     robotAvatar.addEventListener('loadedmetadata', function() {
       robotAvatar.currentTime = Math.max(0, robotAvatar.duration - 0.1);
     });
@@ -435,13 +436,29 @@
           }
         });
 
-        // Защищённая сборка адреса виджета, чтобы редактор его не обрезал
+        // Защищённая сборка адреса виджета
         var host = ['https:/', '/bot.', 'jaicp.', 'com/chatwidget/'].join('');
         var token = 'EzGQTMKa:e0ad90bb3a75aee04ef2352161a74420e95edbb9';
         var wScript = document.createElement('script');
         wScript.src = host + token + '/justwidget.js';
         wScript.async = true;
         document.body.appendChild(wScript);
+
+        // Автоматически нажимаем кнопку-робота сразу после её появления, чтобы чат открылся сам
+        var tries = 0;
+        var autoClickTimer = setInterval(function() {
+          tries++;
+          var box = document.getElementById('kvest-chat-box');
+          var launchBtn = box ? box.querySelector('button') : null;
+          var hasInput = box ? box.querySelector('textarea, input') : null;
+
+          if (launchBtn && !hasInput) {
+            launchBtn.click();
+            clearInterval(autoClickTimer);
+          } else if (hasInput || tries > 30) {
+            clearInterval(autoClickTimer);
+          }
+        }, 250);
       }
     });
 
@@ -453,7 +470,6 @@
 
 </body>
 </html>
-
 
 
 
